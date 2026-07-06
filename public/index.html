@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0b5d3b" />
+    <meta
+      name="description"
+      content="StadiumIQ — a GenAI match-day assistant for the FIFA World Cup 2026: navigation, crowd, accessibility, transport, sustainability and real-time help."
+    />
+    <title>StadiumIQ — Smart Stadium Assistant</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#chat-input">Skip to chat</a>
+
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">⚽</span>
+        <div>
+          <h1>StadiumIQ</h1>
+          <p class="tagline">Your FIFA World Cup 2026 match-day assistant</p>
+        </div>
+      </div>
+
+      <div class="context-bar" role="group" aria-label="Assistant settings">
+        <label class="field">
+          <span>I am a</span>
+          <select id="role-select" aria-label="Your role"></select>
+        </label>
+        <label class="field">
+          <span>Venue</span>
+          <select id="venue-select" aria-label="Stadium"></select>
+        </label>
+        <label class="field">
+          <span>Language</span>
+          <select id="language-select" aria-label="Language"></select>
+        </label>
+        <label class="field checkbox">
+          <input type="checkbox" id="mobility-toggle" />
+          <span>Step-free routes</span>
+        </label>
+      </div>
+
+      <div class="a11y-bar" role="group" aria-label="Accessibility controls">
+        <button type="button" id="contrast-toggle" class="pill" aria-pressed="false">
+          High contrast
+        </button>
+        <button type="button" id="text-size-toggle" class="pill" aria-pressed="false">
+          Larger text
+        </button>
+        <span id="ai-mode" class="mode-badge" aria-live="polite"></span>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section
+        id="chat-log"
+        class="chat-log"
+        aria-live="polite"
+        aria-label="Conversation"
+        role="log"
+      ></section>
+
+      <div id="suggestions" class="suggestions" aria-label="Suggested questions" role="group"></div>
+
+      <form id="chat-form" class="chat-form" autocomplete="off">
+        <label class="visually-hidden" for="chat-input">Ask StadiumIQ a question</label>
+        <textarea
+          id="chat-input"
+          name="message"
+          rows="1"
+          placeholder="Ask about gates, transport, accessibility, food…"
+          aria-describedby="input-hint"
+          required
+        ></textarea>
+        <button type="submit" id="send-btn" class="send-btn">
+          <span class="visually-hidden">Send message</span>
+          <span aria-hidden="true">Send ➤</span>
+        </button>
+        <p id="input-hint" class="visually-hidden">
+          Press Enter to send, Shift plus Enter for a new line.
+        </p>
+      </form>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        StadiumIQ is a hackathon demo. Stadium operational details are illustrative. For
+        emergencies, always contact venue stewards or local emergency services.
+      </p>
+    </footer>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
