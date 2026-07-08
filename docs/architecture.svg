@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="StadiumIQ architecture diagram">
+  <defs>
+    <linearGradient id="pitch" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12945f"/>
+      <stop offset="1" stop-color="#0b5d3b"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#0b3d26"/>
+    </marker>
+    <style>
+      .box{fill:#ffffff;stroke:#0b3d26;stroke-width:2;rx:12;}
+      .title{fill:#0b3d26;font-weight:700;font-size:15px;}
+      .sub{fill:#33574a;font-size:11.5px;}
+      .lbl{fill:#0b3d26;font-size:11px;font-style:italic;}
+      .flow{stroke:#0b3d26;stroke-width:2;fill:none;}
+      .white{fill:#ffffff;}
+    </style>
+  </defs>
+
+  <!-- header band -->
+  <rect x="0" y="0" width="900" height="56" fill="url(#pitch)"/>
+  <circle cx="450" cy="28" r="20" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+  <line x1="450" y1="8" x2="450" y2="48" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+  <circle cx="34" cy="28" r="15" class="white" stroke="#0b3d26" stroke-width="2"/>
+  <path d="M34 17 l6 4 -2.3 7 h-7.4 l-2.3 -7 z" fill="#0b3d26"/>
+  <text x="60" y="34" fill="#fff" font-weight="700" font-size="20">StadiumIQ — Architecture</text>
+
+  <!-- User -->
+  <rect x="40" y="100" width="180" height="90" class="box" rx="12"/>
+  <text x="130" y="130" text-anchor="middle" class="title">👤 User</text>
+  <text x="130" y="152" text-anchor="middle" class="sub">Fan · Volunteer</text>
+  <text x="130" y="168" text-anchor="middle" class="sub">Staff · Organizer</text>
+  <text x="130" y="184" text-anchor="middle" class="sub">role · venue · language</text>
+
+  <!-- Frontend -->
+  <rect x="40" y="300" width="180" height="90" class="box" rx="12"/>
+  <text x="130" y="330" text-anchor="middle" class="title">🖥️ Web UI</text>
+  <text x="130" y="352" text-anchor="middle" class="sub">Accessible · ARIA</text>
+  <text x="130" y="368" text-anchor="middle" class="sub">Multilingual · RTL</text>
+  <text x="130" y="384" text-anchor="middle" class="sub">Dark / high-contrast</text>
+
+  <!-- Express API -->
+  <rect x="320" y="200" width="200" height="120" class="box" rx="12"/>
+  <text x="420" y="232" text-anchor="middle" class="title">⚙️ Express API</text>
+  <text x="420" y="256" text-anchor="middle" class="sub">validate · rate-limit</text>
+  <text x="420" y="272" text-anchor="middle" class="sub">helmet · CORS</text>
+  <text x="420" y="288" text-anchor="middle" class="sub">role-aware prompt</text>
+  <text x="420" y="304" text-anchor="middle" class="sub">function-call loop</text>
+
+  <!-- Gemini -->
+  <rect x="630" y="90" width="220" height="100" class="box" rx="12"/>
+  <text x="740" y="122" text-anchor="middle" class="title">🤖 Google Gemini</text>
+  <text x="740" y="146" text-anchor="middle" class="sub">gemini-2.5-flash</text>
+  <text x="740" y="162" text-anchor="middle" class="sub">decides which tools</text>
+  <text x="740" y="178" text-anchor="middle" class="sub">to call &amp; how to reply</text>
+
+  <!-- Tools -->
+  <rect x="630" y="250" width="220" height="150" class="box" rx="12"/>
+  <text x="740" y="280" text-anchor="middle" class="title">🧰 Decision Engine</text>
+  <text x="740" y="302" text-anchor="middle" class="sub">navigation · crowd</text>
+  <text x="740" y="318" text-anchor="middle" class="sub">transport · accessibility</text>
+  <text x="740" y="334" text-anchor="middle" class="sub">amenities · sustainability</text>
+  <text x="740" y="350" text-anchor="middle" class="sub">safety · operations</text>
+  <text x="740" y="372" text-anchor="middle" class="sub">deterministic · tested</text>
+  <text x="740" y="388" text-anchor="middle" class="sub">authorized per role</text>
+
+  <!-- flows -->
+  <path class="flow" marker-end="url(#arrow)" d="M220 140 H300 Q320 140 320 160 V210"/>
+  <text x="250" y="132" class="lbl">question</text>
+
+  <path class="flow" marker-end="url(#arrow)" d="M520 240 H600 Q630 240 630 190 V150"/>
+  <text x="545" y="205" class="lbl">prompt + tools</text>
+
+  <path class="flow" marker-end="url(#arrow)" d="M630 165 Q560 175 560 260 H600 Q620 262 630 285" />
+  <text x="470" y="180" class="lbl">functionCall</text>
+
+  <path class="flow" marker-end="url(#arrow)" d="M630 330 H540 Q520 330 520 300"/>
+  <text x="545" y="352" class="lbl">tool result</text>
+
+  <path class="flow" marker-end="url(#arrow)" d="M320 300 Q300 300 300 320 V345 H230"/>
+  <text x="250" y="338" class="lbl">answer</text>
+
+  <path class="flow" marker-end="url(#arrow)" d="M130 300 V200 Q130 190 140 190"/>
+  <text x="138" y="250" class="lbl">reply</text>
+
+  <text x="450" y="440" text-anchor="middle" class="sub" font-style="italic">No API key? The same engine runs offline via a deterministic rule-based fallback.</text>
+</svg>

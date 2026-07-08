@@ -47,6 +47,8 @@ StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
      Accessible chat UI
 ```
 
+<p align="center"><img src="docs/architecture.svg" alt="StadiumIQ architecture: user and web UI talk to the Express API, which runs a Gemini function-calling loop against a deterministic, role-authorized decision engine" width="760"></p>
+
 **No API key? It still works.** If `GEMINI_API_KEY` is absent (or a live call fails), StadiumIQ falls back to an **offline rule-based engine** that classifies intent and calls the *same* tools. The project is therefore always runnable and testable — Gemini upgrades the experience (free-form reasoning + full multilingual), it isn’t a hard dependency.
 
 ---

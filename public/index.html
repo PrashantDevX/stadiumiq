@@ -10,15 +10,37 @@
       content="StadiumIQ — a GenAI match-day assistant for the FIFA World Cup 2026: navigation, crowd, accessibility, transport, sustainability and real-time help."
     />
     <title>StadiumIQ — Smart Stadium Assistant</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffffff' stroke='%230b3d26' stroke-width='3'/%3E%3Cpath d='M32 14 l10 7 -4 12 h-12 l-4 -12 z' fill='%230b3d26'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#chat-input">Skip to chat</a>
 
     <header class="app-header">
+      <!-- Decorative football-pitch doodle band (purely cosmetic, hidden from AT). -->
+      <svg class="pitch-doodle" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs>
+          <pattern id="stripes" width="120" height="80" patternUnits="userSpaceOnUse">
+            <rect width="60" height="80" fill="rgba(255,255,255,0.05)" />
+          </pattern>
+        </defs>
+        <rect width="1200" height="80" fill="url(#stripes)" />
+        <circle cx="600" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+        <line x1="600" y1="0" x2="600" y2="80" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+        <rect x="0" y="18" width="46" height="44" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+        <rect x="1154" y="18" width="46" height="44" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+      </svg>
+
       <div class="brand">
-        <span class="brand-mark" aria-hidden="true">⚽</span>
+        <span class="brand-mark" aria-hidden="true">
+          <!-- Stylised soccer ball logo built from SVG (no external image). -->
+          <svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="StadiumIQ logo">
+            <circle cx="32" cy="32" r="30" fill="#ffffff" stroke="#0b3d26" stroke-width="2.5" />
+            <path d="M32 14 l10 7 -4 12 h-12 l-4 -12 z" fill="#0b3d26" />
+            <path d="M32 14 v-1 M42 21 l6 -3 M38 33 l7 4 M26 33 l-7 4 M22 21 l-6 -3" stroke="#0b3d26" stroke-width="2.2" fill="none" stroke-linecap="round" />
+            <circle cx="32" cy="32" r="30" fill="none" stroke="#0b3d26" stroke-width="1" opacity="0.4" />
+          </svg>
+        </span>
         <div>
           <h1>StadiumIQ</h1>
           <p class="tagline">Your FIFA World Cup 2026 match-day assistant</p>
