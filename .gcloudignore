@@ -1,0 +1,13 @@
+# Files not uploaded to Cloud Build / Cloud Run.
+.git
+.gitignore
+node_modules
+.env
+.env.*
+test
+docs
+*.md
+.editorconfig
+.firebase
+.firebaserc
+coverage

@@ -1,10 +1,18 @@
 # Dependencies (keeps the repo well under the 10 MB limit)
 node_modules/
 
-# Secrets — never commit real API keys
+# Secrets — never commit real API keys or service accounts
 .env
 .env.local
 *.key
+serviceAccount*.json
+*-service-account*.json
+
+# Firebase tooling artifacts
+.firebase/
+firebase-debug.log
+.firebaserc
+firestore-debug.log
 
 # Logs
 logs/

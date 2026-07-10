@@ -8,11 +8,21 @@ import { listVenues } from '../services/venueService.js';
 import { ROLES } from '../domain/roles.js';
 import { LANGUAGES } from '../domain/languages.js';
 import { config } from '../config.js';
+import { isFirestoreReady } from '../services/firestore.js';
 
 const router = Router();
 
+/** Snapshot of which Google Cloud / Firebase services are live. */
+function serviceStatus() {
+  return {
+    genAI: config.gemini.enabled ? 'gemini' : 'offline',
+    model: config.gemini.enabled ? config.gemini.model : null,
+    persistence: isFirestoreReady() ? 'firestore' : 'in-memory',
+  };
+}
+
 router.get('/health', (req, res) => {
-  res.json({ status: 'ok', aiMode: config.gemini.enabled ? 'gemini' : 'offline' });
+  res.json({ status: 'ok', ...serviceStatus() });
 });
 
 router.get('/meta', (req, res) => {
@@ -22,6 +32,7 @@ router.get('/meta', (req, res) => {
     languages: LANGUAGES,
     aiMode: config.gemini.enabled ? 'gemini' : 'offline',
     model: config.gemini.enabled ? config.gemini.model : null,
+    services: serviceStatus(),
   });
 });
 

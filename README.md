@@ -4,8 +4,10 @@
 
 ![Node](https://img.shields.io/badge/Node.js-%E2%89%A518.17-339933?logo=node.js&logoColor=white)
 ![Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=google&logoColor=white)
+![Google Cloud](https://img.shields.io/badge/Cloud%20Run%20%7C%20Firestore%20%7C%20Hosting-4285F4?logo=googlecloud&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Tests](https://img.shields.io/badge/tests-37%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-43%20passing-brightgreen)
+![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-brightgreen)
 
 ---
 
@@ -84,9 +86,28 @@ Authorization is enforced **server-side in the tool dispatcher** — even a prom
 
 - **Runtime:** Node.js (ESM), Express 4
 - **GenAI:** Google Gemini via the official [`@google/genai`](https://www.npmjs.com/package/@google/genai) SDK, with **function calling**
+- **Cloud:** Google Cloud Run, Cloud Firestore, Firebase Hosting (see §4a)
 - **Frontend:** dependency-free vanilla HTML/CSS/JS (keeps the repo tiny and the UI fast)
 - **Security:** helmet, CORS allow-list, express-rate-limit, strict input validation
 - **Testing:** Node’s built-in `node:test` (zero test dependencies)
+
+---
+
+## 4a. Google Cloud & Firebase
+
+StadiumIQ is built to run on Google’s stack, and every integration **degrades gracefully** so the app still runs with zero cloud setup.
+
+| Google service | How StadiumIQ uses it | Required? |
+|---|---|---|
+| **Gemini API** (Google AI) | The GenAI brain — function-calling decides which tools to run and writes the reply | Optional (offline fallback) |
+| **Cloud Firestore** | Persists logged incidents (operational intelligence) so the ops picture survives restarts and is shared across instances | Optional (in-memory fallback) |
+| **Cloud Run** | Containerised host for the Express backend (`Dockerfile` included) — one command to deploy, one public URL | For live deploy |
+| **Firebase Hosting** | Serves the frontend on a global CDN and proxies `/api/**` to Cloud Run (`firebase.json`) | Optional |
+| **Firestore Security Rules** | `firestore.rules` denies all direct client access — writes happen only through the trusted backend | With Firestore |
+
+**Notable engineering detail:** the Firestore integration is a **zero-dependency REST client** (`src/services/firestore.js`) using only Node’s built-in `crypto` (to sign the service-account JWT) and `fetch`. That means Firestore support adds **no npm dependencies and no vulnerabilities**, and it authenticates automatically via the metadata server on Cloud Run. Live service status is exposed at `GET /api/health`.
+
+> 📘 **Step-by-step deployment and setup lives in [GUIDE.md](GUIDE.md).**
 
 ---
 
@@ -99,7 +120,7 @@ stadiumiq/
 │   ├── styles.css          #   Light/dark, high-contrast, larger-text, RTL, reduced-motion
 │   └── app.js              #   Chat controller (XSS-safe rendering)
 ├── src/
-│   ├── server.js           # Executable entry point (npm start)
+│   ├── server.js           # Executable entry point (npm start) + Firebase init
 │   ├── app.js              # Express app factory + security middleware
 │   ├── config.js           # Single validated config from env
 │   ├── data/venues.js      # 16 venues + DRY shared operations profile
@@ -115,12 +136,18 @@ stadiumiq/
 │   │   ├── prompt.js       # Context-aware system prompt + guardrails
 │   │   ├── venueService.js # Merges venue overrides onto the base profile
 │   │   ├── crowdModel.js   # Pure crowd-density model
-│   │   ├── incidentStore.js# In-memory incident log
+│   │   ├── incidentStore.js# Incident log (in-memory + optional Firestore sink)
+│   │   ├── firestore.js    # Zero-dependency Cloud Firestore REST client
 │   │   └── tools/          # The decision engine (8 modules + registry)
 │   └── utils/              # logger.js, validation.js
-├── test/                   # 37 tests: tools, crowd, validation, offline, assistant, API
+├── test/                   # 43 tests: tools, crowd, validation, offline, assistant, API, Firestore
+├── docs/architecture.svg   # Architecture diagram
+├── Dockerfile              # Google Cloud Run image
+├── firebase.json           # Firebase Hosting + Cloud Run rewrite
+├── firestore.rules         # Secure-by-default Firestore rules
 ├── .env.example            # Copy to .env
-├── .gitignore              # Ignores node_modules & .env (repo stays < 10 MB)
+├── .gitignore              # Ignores node_modules, .env & service accounts
+├── GUIDE.md                # Step-by-step setup, deploy & submission guide
 ├── LICENSE                 # MIT
 └── README.md
 ```
@@ -154,6 +181,8 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 | `NODE_ENV` | `development` | `production` hides error detail |
 | `CORS_ORIGIN` | `*` | Comma-separated allow-list |
 | `RATE_LIMIT_WINDOW_MINUTES` / `RATE_LIMIT_MAX_REQUESTS` | `15` / `60` | API rate limiting |
+| `FIREBASE_PROJECT_ID` | *(empty)* | Enables Cloud Firestore persistence. Empty → in-memory. |
+| `GOOGLE_APPLICATION_CREDENTIALS` | *(empty)* | Local only: path to a service-account JSON (not needed on Cloud Run) |
 
 ---
 
@@ -161,8 +190,8 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 
 | Method & path | Description |
 |---|---|
-| `GET /api/health` | Liveness + active AI mode |
-| `GET /api/meta` | Venues, roles and languages for the UI |
+| `GET /api/health` | Liveness + active services (`genAI`, `persistence`) |
+| `GET /api/meta` | Venues, roles, languages and live service status for the UI |
 | `POST /api/chat` | Body `{ messages: [{role, content}], context: { role, venueId, language, mobilityNeeds } }` → `{ reply, toolsUsed, mode }` |
 
 ---
@@ -172,12 +201,13 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 ```bash
 npm test
 ```
-37 tests, no external dependencies, covering:
+43 tests, no external dependencies, covering:
 - **Decision engine** — routing, accessibility-first logic, dietary options, transport nudges, graceful errors.
 - **Authorization** — fans cannot call staff-only tools; staff can and incidents are routed.
 - **Crowd model** — arrival/egress curve, express-gate relief, bounds.
 - **Validation** — shape/limit enforcement, defaults, clamping.
 - **Offline engine** — intent classification.
+- **Incident store & Firestore** — id sequencing, routing, severity aggregation, the fire-and-forget persistence sink, and the Firestore REST field serializer.
 - **Assistant** — the full Gemini function-call loop driven by a **mocked** client, plus the offline fallback path.
 - **API** — health, meta and chat over real HTTP (in-process, offline).
 
@@ -200,6 +230,8 @@ npm test
 - **Prompt-injection guardrails** in the system prompt; permissions fixed by the system, not the conversation.
 - Errors are logged server-side and **never leak stack traces** to clients in production.
 - Frontend renders replies with `textContent` only (no `innerHTML`) — no XSS.
+- **Firestore security rules deny all direct client access**; writes go only through the trusted backend.
+- Firestore is integrated via a **zero-dependency REST client**, so cloud persistence adds no third-party code.
 - `npm audit`: **0 vulnerabilities**.
 
 ## 11. Accessibility features
@@ -214,12 +246,13 @@ npm test
 ## 12. Assumptions
 - **Stadium *metadata* is real** (names, cities, capacities, coordinates). Fine-grained **operational data** (gate compass positions, shuttle names, live crowd numbers, incidents) is **realistic but illustrative** — a production build would stream these from each venue’s operations, transit and CCTV/turnstile APIs. This is isolated in `src/data/` and the tool layer so real feeds can be dropped in without touching the AI logic.
 - Crowd density is modelled from the well-known match-day arrival/egress curve rather than live sensors.
-- Incidents are stored in memory for the demo (a production build would use Firestore).
+- Incidents persist to **Cloud Firestore** when configured, and fall back to an in-memory store otherwise so the app always runs with zero setup.
 - In **offline mode** replies are English-only; full multilingual needs a Gemini key.
+- Google Cloud services are **optional by design**: the app is fully functional with no key, so evaluators can always run it, while a configured deployment showcases the full cloud stack.
 
 ## 13. Roadmap
 - Live data feeds (transit GTFS-RT, turnstile counts, incident systems).
-- Deploy on **Google Cloud Run** + **Firebase Hosting** (static frontend); persist incidents in **Firestore**.
+- Firebase Authentication to bind the staff/organizer roles to real sign-in.
 - Streaming responses and voice input for hands-free, eyes-free help.
 
 ## License

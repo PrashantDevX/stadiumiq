@@ -28,6 +28,17 @@ class IncidentStore {
     /** @type {object[]} */
     this._incidents = [];
     this._seq = 0;
+    /** Optional persistence sink (e.g. Firestore). */
+    this._sink = null;
+  }
+
+  /**
+   * Register a fire-and-forget persistence sink. Keeping this decoupled means
+   * the store has no knowledge of Firebase and stays trivially unit-testable.
+   * @param {(incident: object) => Promise<void>} fn
+   */
+  setSink(fn) {
+    this._sink = typeof fn === 'function' ? fn : null;
   }
 
   /**
@@ -56,6 +67,13 @@ class IncidentStore {
       createdAt: new Date().toISOString(),
     };
     this._incidents.push(incident);
+
+    // Persist without blocking the caller; failures are swallowed by the sink.
+    if (this._sink) {
+      Promise.resolve()
+        .then(() => this._sink(incident))
+        .catch(() => {});
+    }
     return incident;
   }
 
@@ -80,6 +98,7 @@ class IncidentStore {
   _reset() {
     this._incidents = [];
     this._seq = 0;
+    this._sink = null;
   }
 }
 

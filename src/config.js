@@ -16,6 +16,7 @@ function intFromEnv(name, fallback) {
 }
 
 const geminiApiKey = (process.env.GEMINI_API_KEY ?? '').trim();
+const firebaseProjectId = (process.env.FIREBASE_PROJECT_ID ?? '').trim();
 
 export const config = Object.freeze({
   env: process.env.NODE_ENV ?? 'development',
@@ -34,6 +35,18 @@ export const config = Object.freeze({
     maxToolIterations: 5,
     /** Trim conversation history to the most recent N turns for efficiency. */
     maxHistoryTurns: 12,
+  },
+
+  firebase: {
+    /**
+     * Cloud Firestore persistence for incidents (operational intelligence).
+     * Enabled only when FIREBASE_PROJECT_ID is set; otherwise the app uses the
+     * in-memory store. On Cloud Run, Application Default Credentials are picked
+     * up automatically — no key file is needed.
+     */
+    projectId: firebaseProjectId,
+    enabled: firebaseProjectId.length > 0,
+    incidentsCollection: (process.env.FIRESTORE_INCIDENTS_COLLECTION ?? 'incidents').trim(),
   },
 
   cors: {
