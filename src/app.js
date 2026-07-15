@@ -23,6 +23,9 @@ const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..',
 export function createApp() {
   const app = express();
   app.disable('x-powered-by');
+  // Behind Vercel / Cloud Run there is exactly one trusted proxy hop; this
+  // lets express-rate-limit key on the real client IP instead of the proxy's.
+  app.set('trust proxy', 1);
 
   // --- Security headers (helmet) with a tight Content-Security-Policy. ---
   app.use(

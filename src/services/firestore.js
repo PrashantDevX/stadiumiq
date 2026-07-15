@@ -93,16 +93,32 @@ async function getAccessToken() {
  * Initialize Firestore access and verify connectivity by minting a token.
  * @returns {Promise<{ready:true}|null>}
  */
+/**
+ * Load a service account from either GOOGLE_SERVICE_ACCOUNT_JSON (raw or
+ * base64-encoded JSON — the only option on Vercel, which has no key files on
+ * disk) or a GOOGLE_APPLICATION_CREDENTIALS file path (local development).
+ */
+function loadServiceAccount() {
+  const inline = (process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? '').trim();
+  if (inline) {
+    const json = inline.startsWith('{')
+      ? inline
+      : Buffer.from(inline, 'base64').toString('utf8');
+    const raw = JSON.parse(json);
+    return { client_email: raw.client_email, private_key: raw.private_key };
+  }
+  const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  if (keyPath && fs.existsSync(keyPath)) {
+    const raw = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
+    return { client_email: raw.client_email, private_key: raw.private_key };
+  }
+  return null; // fall back to metadata credentials (Cloud Run)
+}
+
 export async function initFirebase() {
   if (!config.firebase.enabled) return null;
   try {
-    const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    if (keyPath && fs.existsSync(keyPath)) {
-      const raw = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
-      serviceAccount = { client_email: raw.client_email, private_key: raw.private_key };
-    } else {
-      serviceAccount = null; // fall back to metadata credentials (Cloud Run)
-    }
+    serviceAccount = loadServiceAccount();
 
     await getAccessToken(); // verify we can actually authenticate
     ready = true;

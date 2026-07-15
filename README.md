@@ -109,27 +109,30 @@ Plus **stadium atmosphere**: a referee whistle and crowd swell **synthesised wit
 
 ## 4a. Google Cloud & Firebase
 
-StadiumIQ is built to run on Google’s stack, and every integration **degrades gracefully** so the app still runs with zero cloud setup.
+StadiumIQ is built Google-first on the **no-cost tiers** (Gemini free tier + Firebase Spark), and every integration **degrades gracefully** so the app still runs with zero cloud setup.
 
-| Google service | How StadiumIQ uses it | Required? |
+| Service | How StadiumIQ uses it | Cost |
 |---|---|---|
-| **Gemini API** (Google AI) | The GenAI brain — function-calling decides which tools to run and writes the reply | Optional (offline fallback) |
-| **Cloud Firestore** | Persists logged incidents (operational intelligence) so the ops picture survives restarts and is shared across instances | Optional (in-memory fallback) |
-| **Cloud Run** | Containerised host for the Express backend (`Dockerfile` included) — one command to deploy, one public URL | For live deploy |
-| **Firebase Hosting** | Serves the frontend on a global CDN and proxies `/api/**` to Cloud Run (`firebase.json`) | Optional |
-| **Firestore Security Rules** | `firestore.rules` denies all direct client access — writes happen only through the trusted backend | With Firestore |
+| **Gemini API** (Google AI) | The GenAI brain — function-calling decides which tools to run and writes the reply | Free tier |
+| **Cloud Firestore** (Firebase Spark) | Persists logged incidents (operational intelligence) so the ops picture survives restarts and is shared across instances | Free (Spark) |
+| **Firestore Security Rules** | `firestore.rules` denies all direct client access — writes happen only through the trusted backend | Free |
+| **Vercel** | Free hosting: `/public` on the CDN, the Express API as a serverless function (`api/index.js` + `vercel.json`) | Free (Hobby) |
+| **Cloud Run** *(optional)* | Same app as a container (`Dockerfile` included) for teams with GCP billing | Free tier* |
 
-**Notable engineering detail:** the Firestore integration is a **zero-dependency REST client** (`src/services/firestore.js`) using only Node’s built-in `crypto` (to sign the service-account JWT) and `fetch`. That means Firestore support adds **no npm dependencies and no vulnerabilities**, and it authenticates automatically via the metadata server on Cloud Run. Live service status is exposed at `GET /api/health`.
+**Notable engineering detail:** the Firestore integration is a **zero-dependency REST client** (`src/services/firestore.js`) using only Node’s built-in `crypto` (to sign the service-account JWT) and `fetch`. That means Firestore support adds **no npm dependencies and no vulnerabilities**. Credentials resolve in order: `GOOGLE_SERVICE_ACCOUNT_JSON` env (Vercel), `GOOGLE_APPLICATION_CREDENTIALS` file (local), GCP metadata server (Cloud Run). Live service status is exposed at `GET /api/health`.
 
-**Deploying (one command each):**
+**Deploying free on Vercel (one codebase, no changes):**
 ```bash
-# Backend + frontend on Cloud Run (requires billing enabled on the project)
-gcloud run deploy stadiumiq --source . --region us-central1 --allow-unauthenticated \
-  --set-env-vars GEMINI_API_KEY=YOUR_KEY,GEMINI_MODEL=gemini-3.1-flash-lite,FIREBASE_PROJECT_ID=YOUR_PROJECT
-
-# Frontend on Firebase Hosting (proxies /api to the Cloud Run service)
-firebase deploy --only hosting
+npm i -g vercel && vercel login
+vercel                                        # first deploy (accept defaults)
+vercel env add GEMINI_API_KEY production      # paste your key
+vercel env add GEMINI_MODEL production        # gemini-3.1-flash-lite
+vercel env add FIREBASE_PROJECT_ID production           # optional, enables Firestore
+vercel env add GOOGLE_SERVICE_ACCOUNT_JSON production   # optional, paste key JSON
+vercel --prod
 ```
+
+*Cloud Run alternative (needs billing):* `gcloud run deploy stadiumiq --source . --region us-central1 --allow-unauthenticated`
 
 ---
 
@@ -171,8 +174,10 @@ stadiumiq/
 │   │   └── tools/          # The decision engine (9 modules + registry, 11 tools)
 │   └── utils/              # logger.js, validation.js
 ├── test/                   # 55 tests: tools, crowd, validation, offline, assistant, API, markdown
+├── api/index.js            # Vercel serverless entry (exports the Express app)
+├── vercel.json             # Vercel routing + security headers
 ├── docs/architecture.svg   # Architecture diagram
-├── Dockerfile              # Google Cloud Run image
+├── Dockerfile              # Optional Google Cloud Run image
 ├── firebase.json           # Firebase Hosting + Cloud Run rewrite
 ├── firestore.rules         # Secure-by-default Firestore rules
 ├── .env.example            # Copy to .env
