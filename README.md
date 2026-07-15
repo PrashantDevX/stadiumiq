@@ -9,6 +9,8 @@
 ![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)
 ![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-brightgreen)
 
+### 🌐 Live demo: **https://stadiumiq-chi.vercel.app**
+
 ---
 
 ## 1. Challenge & chosen vertical
