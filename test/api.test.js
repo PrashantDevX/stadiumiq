@@ -61,3 +61,34 @@ test('POST /api/chat rejects an invalid body with 400', async () => {
   });
   assert.equal(res.status, 400);
 });
+
+test('GET /api/schedule returns the tournament calendar', async () => {
+  const res = await fetch(`${base}/api/schedule`);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.tournament.finalVenueId, 'metlife');
+  assert.ok(body.matches.length >= 5);
+});
+
+test('GET /api/venues/:id returns a merged venue profile with matches', async () => {
+  const res = await fetch(`${base}/api/venues/metlife`);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.name, 'MetLife Stadium');
+  assert.ok(Array.isArray(body.operations.gates));
+  assert.ok(body.matches.some((m) => m.round.includes('FINAL')));
+});
+
+test('GET /api/venues/:id/ops returns gate loads and incident summary', async () => {
+  const res = await fetch(`${base}/api/venues/sofi/ops?minutesToKickoff=10`);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.gates.length, 4);
+  assert.ok(['high', 'very_high'].includes(body.overall.level));
+  assert.ok(body.incidents);
+});
+
+test('GET /api/venues/unknown returns 404', async () => {
+  const res = await fetch(`${base}/api/venues/atlantis`);
+  assert.equal(res.status, 404);
+});

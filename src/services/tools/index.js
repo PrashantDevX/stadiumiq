@@ -18,6 +18,7 @@ import { amenityTools } from './amenities.js';
 import { sustainabilityTools } from './sustainability.js';
 import { safetyTools } from './safety.js';
 import { operationsTools } from './operations.js';
+import { scheduleTools } from './schedule.js';
 
 const ALL_TOOLS = [
   ...navigationTools,
@@ -28,6 +29,7 @@ const ALL_TOOLS = [
   ...sustainabilityTools,
   ...safetyTools,
   ...operationsTools,
+  ...scheduleTools,
 ];
 
 /** Registry keyed by tool name for O(1) dispatch. */

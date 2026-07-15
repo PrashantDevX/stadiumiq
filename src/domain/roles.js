@@ -22,6 +22,7 @@ export const ROLES = Object.freeze({
     /** Tools this role may invoke. `operational` tools are staff-only. */
     allowedTools: [
       'get_venue_guide',
+      'get_match_schedule',
       'plan_route_to_seat',
       'get_crowd_status',
       'plan_transport',
@@ -39,6 +40,7 @@ export const ROLES = Object.freeze({
     priorities: ['navigation', 'accessibility', 'crowd', 'safety', 'operations'],
     allowedTools: [
       'get_venue_guide',
+      'get_match_schedule',
       'plan_route_to_seat',
       'get_crowd_status',
       'plan_transport',
@@ -57,6 +59,7 @@ export const ROLES = Object.freeze({
     priorities: ['crowd', 'operations', 'safety', 'accessibility'],
     allowedTools: [
       'get_venue_guide',
+      'get_match_schedule',
       'get_crowd_status',
       'get_accessibility_services',
       'find_amenities',
@@ -73,6 +76,7 @@ export const ROLES = Object.freeze({
     priorities: ['operations', 'crowd', 'sustainability', 'safety'],
     allowedTools: [
       'get_venue_guide',
+      'get_match_schedule',
       'get_crowd_status',
       'plan_transport',
       'get_sustainability_tips',

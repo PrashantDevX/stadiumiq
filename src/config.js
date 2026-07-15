@@ -24,7 +24,7 @@ export const config = Object.freeze({
 
   gemini: {
     apiKey: geminiApiKey,
-    model: (process.env.GEMINI_MODEL ?? 'gemini-2.5-flash').trim(),
+    model: (process.env.GEMINI_MODEL ?? 'gemini-3.1-flash-lite').trim(),
     /**
      * When no API key is present the app runs in a fully-functional OFFLINE
      * mode backed by the deterministic reasoning engine. This makes the project

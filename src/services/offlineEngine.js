@@ -21,6 +21,11 @@ const INTENTS = [
     args: (text) => ({ situation: detectSituation(text) }),
   },
   {
+    tool: 'get_match_schedule',
+    test: /schedule|fixture|final\b|semi[- ]?final|quarter[- ]?final|what match|which match|when.*(match|game|play|final)|kick[- ]?off date/i,
+    args: () => ({}),
+  },
+  {
     tool: 'get_accessibility_services',
     test: /wheelchair|accessib|disab|step[- ]?free|hearing|deaf|sensory|autism|blind|braille|service animal|guide dog/i,
     args: (text) => ({ need: text }),
@@ -143,6 +148,8 @@ const FORMATTERS = {
     `Helping ${r.venue} stay green:\n${bullet([r.recycling, r.transitIncentive, ...r.tips])}`,
   get_safety_guidance: (r) =>
     `${r.situation.replace('_', ' ')} — stay calm and:\n${bullet(r.steps)}\n⚠️ ${r.reminder}`,
+  get_match_schedule: (r) =>
+    `${r.tournament}\n${bullet(r.matches.map((m) => `${m.date} — ${m.round}: ${m.fixture} @ ${m.venue}`))}\n${r.finale}`,
   report_incident: (r) =>
     r.logged ? `${r.message} Someone will respond shortly.` : 'I could not log that incident.',
   get_operations_brief: (r) =>

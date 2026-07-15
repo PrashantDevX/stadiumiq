@@ -15,6 +15,7 @@ import rateLimit from 'express-rate-limit';
 import { config } from './config.js';
 import metaRoutes from './routes/meta.js';
 import chatRoutes from './routes/chat.js';
+import venueRoutes from './routes/venues.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -66,6 +67,7 @@ export function createApp() {
   // --- Routes ---
   app.use('/api', metaRoutes);
   app.use('/api', chatRoutes);
+  app.use('/api', venueRoutes);
   app.use('/api', notFound); // JSON 404 for unknown API paths
 
   // --- Static frontend ---

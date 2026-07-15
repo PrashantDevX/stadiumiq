@@ -7,17 +7,16 @@
     <meta name="theme-color" content="#0b5d3b" />
     <meta
       name="description"
-      content="StadiumIQ — a GenAI match-day assistant for the FIFA World Cup 2026: navigation, crowd, accessibility, transport, sustainability and real-time help."
+      content="StadiumIQ — a GenAI match-day companion for the FIFA World Cup 2026: AI assistant, interactive stadium map, venue explorer and live operations room."
     />
-    <title>StadiumIQ — Smart Stadium Assistant</title>
+    <title>StadiumIQ — FIFA World Cup 2026 Companion</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffffff' stroke='%230b3d26' stroke-width='3'/%3E%3Cpath d='M32 14 l10 7 -4 12 h-12 l-4 -12 z' fill='%230b3d26'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <a class="skip-link" href="#chat-input">Skip to chat</a>
+    <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="app-header">
-      <!-- Decorative football-pitch doodle band (purely cosmetic, hidden from AT). -->
       <svg class="pitch-doodle" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <pattern id="stripes" width="120" height="80" patternUnits="userSpaceOnUse">
@@ -31,87 +30,159 @@
         <rect x="1154" y="18" width="46" height="44" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
       </svg>
 
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true">
-          <!-- Stylised soccer ball logo built from SVG (no external image). -->
-          <svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="StadiumIQ logo">
-            <circle cx="32" cy="32" r="30" fill="#ffffff" stroke="#0b3d26" stroke-width="2.5" />
-            <path d="M32 14 l10 7 -4 12 h-12 l-4 -12 z" fill="#0b3d26" />
-            <path d="M32 14 v-1 M42 21 l6 -3 M38 33 l7 4 M26 33 l-7 4 M22 21 l-6 -3" stroke="#0b3d26" stroke-width="2.2" fill="none" stroke-linecap="round" />
-            <circle cx="32" cy="32" r="30" fill="none" stroke="#0b3d26" stroke-width="1" opacity="0.4" />
-          </svg>
-        </span>
-        <div>
-          <h1>StadiumIQ</h1>
-          <p class="tagline">Your FIFA World Cup 2026 match-day assistant</p>
+      <div class="topbar">
+        <a class="brand" href="#home" aria-label="StadiumIQ home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="40" height="40" role="img" aria-label="StadiumIQ logo">
+              <circle cx="32" cy="32" r="30" fill="#ffffff" stroke="#0b3d26" stroke-width="2.5" />
+              <path d="M32 14 l10 7 -4 12 h-12 l-4 -12 z" fill="#0b3d26" />
+              <path d="M32 14 v-1 M42 21 l6 -3 M38 33 l7 4 M26 33 l-7 4 M22 21 l-6 -3" stroke="#0b3d26" stroke-width="2.2" fill="none" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="brand-text">
+            <strong>StadiumIQ</strong>
+            <small>World Cup 2026 Companion</small>
+          </span>
+        </a>
+
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="#home" data-nav="home">Home</a>
+          <a href="#assistant" data-nav="assistant">AI Assistant</a>
+          <a href="#map" data-nav="map">Stadium Map</a>
+          <a href="#venues" data-nav="venues">Venues</a>
+          <a href="#ops" data-nav="ops">Ops Room</a>
+        </nav>
+
+        <div class="a11y-bar" role="group" aria-label="Display and sound options">
+          <button type="button" id="contrast-toggle" class="pill" aria-pressed="false" title="Toggle high contrast">HC</button>
+          <button type="button" id="text-size-toggle" class="pill" aria-pressed="false" title="Toggle larger text">A+</button>
+          <button type="button" id="sound-toggle" class="pill" aria-pressed="false" title="Toggle stadium sounds">🔊</button>
         </div>
       </div>
 
-      <div class="context-bar" role="group" aria-label="Assistant settings">
-        <label class="field">
-          <span>I am a</span>
-          <select id="role-select" aria-label="Your role"></select>
-        </label>
-        <label class="field">
-          <span>Venue</span>
-          <select id="venue-select" aria-label="Stadium"></select>
-        </label>
-        <label class="field">
-          <span>Language</span>
-          <select id="language-select" aria-label="Language"></select>
-        </label>
-        <label class="field checkbox">
-          <input type="checkbox" id="mobility-toggle" />
-          <span>Step-free routes</span>
-        </label>
-      </div>
-
-      <div class="a11y-bar" role="group" aria-label="Accessibility controls">
-        <button type="button" id="contrast-toggle" class="pill" aria-pressed="false">
-          High contrast
-        </button>
-        <button type="button" id="text-size-toggle" class="pill" aria-pressed="false">
-          Larger text
-        </button>
+      <div class="context-bar" role="group" aria-label="Assistant context">
+        <label class="field"><span>I am a</span><select id="role-select" aria-label="Your role"></select></label>
+        <label class="field"><span>Venue</span><select id="venue-select" aria-label="Stadium"></select></label>
+        <label class="field"><span>Language</span><select id="language-select" aria-label="Language"></select></label>
+        <label class="field checkbox"><input type="checkbox" id="mobility-toggle" /><span>Step-free routes</span></label>
         <span id="ai-mode" class="mode-badge" aria-live="polite"></span>
       </div>
     </header>
 
-    <main class="app-main">
-      <section
-        id="chat-log"
-        class="chat-log"
-        aria-live="polite"
-        aria-label="Conversation"
-        role="log"
-      ></section>
+    <main id="main" class="app-main" tabindex="-1">
+      <!-- ============================== HOME ============================== -->
+      <section id="view-home" class="view" hidden aria-labelledby="home-title">
+        <div class="hero">
+          <div class="hero-inner">
+            <p class="hero-kicker">USA · CANADA · MEXICO — 11 JUNE → 19 JULY 2026</p>
+            <h2 id="home-title">It’s <em>Finals Week</em>.<br />Your smartest way around the World Cup.</h2>
+            <p class="hero-sub">
+              One GenAI companion for fans, volunteers, staff and organizers — navigation, crowds,
+              accessibility, transport, sustainability and live operations across all 16 stadiums.
+            </p>
+            <div class="countdown" role="timer" aria-label="Countdown to the final">
+              <p class="countdown-label">🏆 The Final — MetLife Stadium, New York / New Jersey</p>
+              <div class="countdown-digits" id="countdown-digits"></div>
+            </div>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#assistant">⚽ Ask StadiumIQ</a>
+              <a class="btn btn-ghost" href="#map">Explore the map</a>
+            </div>
+          </div>
+          <div class="hero-stats" role="list" aria-label="Tournament facts">
+            <div role="listitem"><strong>48</strong><span>teams</span></div>
+            <div role="listitem"><strong>104</strong><span>matches</span></div>
+            <div role="listitem"><strong>16</strong><span>stadiums</span></div>
+            <div role="listitem"><strong>3</strong><span>host nations</span></div>
+          </div>
+        </div>
 
-      <div id="suggestions" class="suggestions" aria-label="Suggested questions" role="group"></div>
+        <h3 class="section-title">Finals week at a glance</h3>
+        <div id="home-schedule" class="schedule-strip" aria-label="Knockout schedule"></div>
 
-      <form id="chat-form" class="chat-form" autocomplete="off">
-        <label class="visually-hidden" for="chat-input">Ask StadiumIQ a question</label>
-        <textarea
-          id="chat-input"
-          name="message"
-          rows="1"
-          placeholder="Ask about gates, transport, accessibility, food…"
-          aria-describedby="input-hint"
-          required
-        ></textarea>
-        <button type="submit" id="send-btn" class="send-btn">
-          <span class="visually-hidden">Send message</span>
-          <span aria-hidden="true">Send ➤</span>
-        </button>
-        <p id="input-hint" class="visually-hidden">
-          Press Enter to send, Shift plus Enter for a new line.
-        </p>
-      </form>
+        <h3 class="section-title">What can StadiumIQ do?</h3>
+        <div class="feature-grid">
+          <a class="feature-card" href="#assistant">
+            <span class="feature-icon" aria-hidden="true">🧠</span>
+            <strong>GenAI Assistant</strong>
+            <p>Ask anything in 6 languages — routes to your seat, food, crowds, safety. Powered by Gemini function-calling.</p>
+          </a>
+          <a class="feature-card" href="#map">
+            <span class="feature-icon" aria-hidden="true">🗺️</span>
+            <strong>Stadium Map</strong>
+            <p>All 16 venues across three nations on an interactive map — tap a pin to explore.</p>
+          </a>
+          <a class="feature-card" href="#venues">
+            <span class="feature-icon" aria-hidden="true">🏟️</span>
+            <strong>Venue Explorer</strong>
+            <p>Gates, transit, accessibility services, sustainability and fixtures for every stadium.</p>
+          </a>
+          <a class="feature-card" href="#ops">
+            <span class="feature-icon" aria-hidden="true">📡</span>
+            <strong>Operations Room</strong>
+            <p>Live gate-load meters, crowd forecasts and incident intelligence for staff & organizers.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- ============================ ASSISTANT ============================ -->
+      <section id="view-assistant" class="view" hidden aria-labelledby="assistant-title">
+        <h2 id="assistant-title" class="view-title">AI Assistant</h2>
+        <section id="chat-log" class="chat-log" aria-live="polite" aria-label="Conversation" role="log"></section>
+        <div id="suggestions" class="suggestions" aria-label="Suggested questions" role="group"></div>
+        <form id="chat-form" class="chat-form" autocomplete="off">
+          <label class="visually-hidden" for="chat-input">Ask StadiumIQ a question</label>
+          <textarea id="chat-input" name="message" rows="1" placeholder="Ask about gates, transport, accessibility, food…" aria-describedby="input-hint" required></textarea>
+          <button type="submit" id="send-btn" class="send-btn">
+            <span class="visually-hidden">Send message</span><span aria-hidden="true">Send ➤</span>
+          </button>
+          <p id="input-hint" class="visually-hidden">Press Enter to send, Shift plus Enter for a new line.</p>
+        </form>
+      </section>
+
+      <!-- =============================== MAP =============================== -->
+      <section id="view-map" class="view" hidden aria-labelledby="map-title">
+        <h2 id="map-title" class="view-title">Host Stadium Map</h2>
+        <p class="view-sub">16 stadiums · 3 nations. Select a pin to see the venue — activate it to open the full guide.</p>
+        <div class="map-wrap">
+          <svg id="venue-map" viewBox="0 0 1000 640" role="group" aria-label="Map of the 16 host stadiums across the USA, Canada and Mexico"></svg>
+          <div id="map-card" class="map-card" hidden></div>
+        </div>
+        <div class="map-legend" aria-hidden="true">
+          <span><i class="dot dot-ca"></i>Canada</span>
+          <span><i class="dot dot-us"></i>USA</span>
+          <span><i class="dot dot-mx"></i>Mexico</span>
+        </div>
+      </section>
+
+      <!-- ============================= VENUES ============================= -->
+      <section id="view-venues" class="view" hidden aria-labelledby="venues-title">
+        <h2 id="venues-title" class="view-title">Venue Explorer</h2>
+        <div id="venue-grid" class="venue-grid"></div>
+        <article id="venue-detail" class="venue-detail" hidden aria-live="polite"></article>
+      </section>
+
+      <!-- =============================== OPS =============================== -->
+      <section id="view-ops" class="view" hidden aria-labelledby="ops-title">
+        <h2 id="ops-title" class="view-title">Operations Room</h2>
+        <p class="view-sub">Real-time decision support: gate loads, crowd forecast and incident intelligence.</p>
+        <div class="ops-controls">
+          <label class="field"><span>Venue</span><select id="ops-venue" aria-label="Operations venue"></select></label>
+          <label class="field slider-field">
+            <span>Time to kickoff: <output id="ops-minutes-out">60</output> min</span>
+            <input type="range" id="ops-minutes" min="-60" max="240" step="15" value="60" aria-label="Minutes to kickoff" />
+          </label>
+          <button type="button" id="ops-refresh" class="btn btn-primary btn-sm">Refresh</button>
+        </div>
+        <div id="ops-board" class="ops-board"></div>
+      </section>
     </main>
 
     <footer class="app-footer">
       <p>
-        StadiumIQ is a hackathon demo. Stadium operational details are illustrative. For
-        emergencies, always contact venue stewards or local emergency services.
+        StadiumIQ is a hackathon demo for Challenge 4 — Smart Stadiums &amp; Tournament Operations.
+        Stadium operational details are illustrative. In an emergency, always contact venue stewards
+        or local emergency services.
       </p>
     </footer>
 

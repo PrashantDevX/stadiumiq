@@ -31,3 +31,4 @@ dist/
 build/
 coverage/
 .nyc_output/
+GUIDE.md

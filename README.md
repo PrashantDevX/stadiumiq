@@ -6,7 +6,7 @@
 ![Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=google&logoColor=white)
 ![Google Cloud](https://img.shields.io/badge/Cloud%20Run%20%7C%20Firestore%20%7C%20Hosting-4285F4?logo=googlecloud&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Tests](https://img.shields.io/badge/tests-43%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)
 ![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-brightgreen)
 
 ---
@@ -42,7 +42,7 @@ StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
         ▼
 ┌───────────────┐  functionCall: plan_route_to_seat(...)   ┌──────────────────────┐
 │  Google Gemini │ ───────────────────────────────────────▶ │  Tool decision engine │
-│  (2.5 Flash)   │ ◀─────────────────────────────────────── │  (authorized, tested) │
+│ (Gemini Flash) │ ◀─────────────────────────────────────── │  (authorized, tested) │
 └───────────────┘  functionResponse: { gate, steps, crowd } └──────────────────────┘
         │  final natural-language answer (localized)
         ▼
@@ -80,6 +80,20 @@ StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
 
 Authorization is enforced **server-side in the tool dispatcher** — even a prompt-injected message can’t make a Fan log incidents.
 
+### Not just a chatbot — a full match-day web app
+
+The GenAI assistant is one of **five views** in a framework-free single-page app:
+
+| View | What it gives you |
+|---|---|
+| 🏠 **Home** | Finals-week hero with a **live countdown to the Final** (July 19, MetLife), tournament facts and the knockout schedule strip |
+| 🧠 **AI Assistant** | The Gemini-powered chat — replies rendered as rich text via a sanitising markdown renderer |
+| 🗺️ **Stadium Map** | All 16 stadiums plotted from their real coordinates on an interactive SVG map — keyboard-accessible pins, country-coded, tap through to the guide or the assistant |
+| 🏟️ **Venue Explorer** | Per-stadium cards → gates, transit, accessibility services, sustainability, dietary options and that stadium’s fixtures |
+| 📡 **Ops Room** | Real-time decision support: per-gate load meters driven by the crowd model, a kickoff-time simulator and live incident intelligence |
+
+Plus **stadium atmosphere**: a referee whistle and crowd swell **synthesised with the Web Audio API** (zero audio files shipped) — off by default, one-tap toggle, automatically disabled for users who prefer reduced motion.
+
 ---
 
 ## 4. Tech stack
@@ -107,7 +121,15 @@ StadiumIQ is built to run on Google’s stack, and every integration **degrades 
 
 **Notable engineering detail:** the Firestore integration is a **zero-dependency REST client** (`src/services/firestore.js`) using only Node’s built-in `crypto` (to sign the service-account JWT) and `fetch`. That means Firestore support adds **no npm dependencies and no vulnerabilities**, and it authenticates automatically via the metadata server on Cloud Run. Live service status is exposed at `GET /api/health`.
 
-> 📘 **Step-by-step deployment and setup lives in [GUIDE.md](GUIDE.md).**
+**Deploying (one command each):**
+```bash
+# Backend + frontend on Cloud Run (requires billing enabled on the project)
+gcloud run deploy stadiumiq --source . --region us-central1 --allow-unauthenticated \
+  --set-env-vars GEMINI_API_KEY=YOUR_KEY,GEMINI_MODEL=gemini-3.1-flash-lite,FIREBASE_PROJECT_ID=YOUR_PROJECT
+
+# Frontend on Firebase Hosting (proxies /api to the Cloud Run service)
+firebase deploy --only hosting
+```
 
 ---
 
@@ -115,20 +137,28 @@ StadiumIQ is built to run on Google’s stack, and every integration **degrades 
 
 ```
 stadiumiq/
-├── public/                 # Accessible, multilingual vanilla frontend
-│   ├── index.html          #   Semantic markup, ARIA, skip-link
+├── public/                 # Accessible, multilingual vanilla frontend (5 views, no framework)
+│   ├── index.html          #   Semantic markup, ARIA, skip-link, hash-routed views
 │   ├── styles.css          #   Light/dark, high-contrast, larger-text, RTL, reduced-motion
-│   └── app.js              #   Chat controller (XSS-safe rendering)
+│   ├── app.js              #   Entry: router, header context, a11y & sound toggles
+│   └── js/
+│       ├── state.js        #   Shared state + tiny pub/sub
+│       ├── api.js          #   Fetch helpers
+│       ├── markdown.js     #   Safe markdown renderer (escapes all input first)
+│       ├── sound.js        #   Web-Audio-synthesised whistle/crowd (no audio files)
+│       └── views/          #   chat.js, home.js, map.js, venues.js, ops.js
 ├── src/
 │   ├── server.js           # Executable entry point (npm start) + Firebase init
 │   ├── app.js              # Express app factory + security middleware
 │   ├── config.js           # Single validated config from env
-│   ├── data/venues.js      # 16 venues + DRY shared operations profile
+│   ├── data/
+│   │   ├── venues.js       # 16 venues + DRY shared operations profile
+│   │   └── matches.js      # Tournament calendar (knockout anchors)
 │   ├── domain/
 │   │   ├── roles.js        # Personas + per-role tool authorization
 │   │   └── languages.js    # Supported languages (with RTL flag)
 │   ├── middleware/         # errorHandler, validateChat
-│   ├── routes/             # chat.js (/api/chat), meta.js (/api/meta, /api/health)
+│   ├── routes/             # chat.js, meta.js, venues.js (/schedule, /venues/:id, /ops)
 │   ├── services/
 │   │   ├── assistant.js    # Orchestrator: Gemini function-call loop + fallback
 │   │   ├── geminiClient.js # Thin, mockable SDK wrapper
@@ -138,16 +168,15 @@ stadiumiq/
 │   │   ├── crowdModel.js   # Pure crowd-density model
 │   │   ├── incidentStore.js# Incident log (in-memory + optional Firestore sink)
 │   │   ├── firestore.js    # Zero-dependency Cloud Firestore REST client
-│   │   └── tools/          # The decision engine (8 modules + registry)
+│   │   └── tools/          # The decision engine (9 modules + registry, 11 tools)
 │   └── utils/              # logger.js, validation.js
-├── test/                   # 43 tests: tools, crowd, validation, offline, assistant, API, Firestore
+├── test/                   # 55 tests: tools, crowd, validation, offline, assistant, API, markdown
 ├── docs/architecture.svg   # Architecture diagram
 ├── Dockerfile              # Google Cloud Run image
 ├── firebase.json           # Firebase Hosting + Cloud Run rewrite
 ├── firestore.rules         # Secure-by-default Firestore rules
 ├── .env.example            # Copy to .env
 ├── .gitignore              # Ignores node_modules, .env & service accounts
-├── GUIDE.md                # Step-by-step setup, deploy & submission guide
 ├── LICENSE                 # MIT
 └── README.md
 ```
@@ -176,7 +205,7 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 | Variable | Default | Purpose |
 |---|---|---|
 | `GEMINI_API_KEY` | *(empty)* | Enables Gemini. Empty → offline mode. |
-| `GEMINI_MODEL` | `gemini-2.5-flash` | Free-tier model. Swap for `gemini-3-flash` etc. |
+| `GEMINI_MODEL` | `gemini-3.1-flash-lite` | Free-tier model. Swap for `gemini-3-flash` etc. |
 | `PORT` | `3000` | HTTP port |
 | `NODE_ENV` | `development` | `production` hides error detail |
 | `CORS_ORIGIN` | `*` | Comma-separated allow-list |
@@ -191,8 +220,11 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 | Method & path | Description |
 |---|---|
 | `GET /api/health` | Liveness + active services (`genAI`, `persistence`) |
-| `GET /api/meta` | Venues, roles, languages and live service status for the UI |
+| `GET /api/meta` | Venues (with coordinates), roles, languages and live service status |
 | `POST /api/chat` | Body `{ messages: [{role, content}], context: { role, venueId, language, mobilityNeeds } }` → `{ reply, toolsUsed, mode }` |
+| `GET /api/schedule` | Tournament calendar (optionally `?venue=`) — powers Home & Venue views |
+| `GET /api/venues/:id` | Full merged venue profile + its fixtures — powers the Venue Explorer |
+| `GET /api/venues/:id/ops` | Gate-by-gate crowd loads + incident summary (`?minutesToKickoff=`) — powers the Ops Room |
 
 ---
 
@@ -201,15 +233,16 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 ```bash
 npm test
 ```
-43 tests, no external dependencies, covering:
-- **Decision engine** — routing, accessibility-first logic, dietary options, transport nudges, graceful errors.
+55 tests, no external dependencies, covering:
+- **Decision engine** — routing, accessibility-first logic, dietary options, transport nudges, match schedule, graceful errors.
 - **Authorization** — fans cannot call staff-only tools; staff can and incidents are routed.
 - **Crowd model** — arrival/egress curve, express-gate relief, bounds.
 - **Validation** — shape/limit enforcement, defaults, clamping.
 - **Offline engine** — intent classification.
+- **Markdown renderer** — formatting *and* proof that script/HTML injection is neutralised (XSS).
 - **Incident store & Firestore** — id sequencing, routing, severity aggregation, the fire-and-forget persistence sink, and the Firestore REST field serializer.
 - **Assistant** — the full Gemini function-call loop driven by a **mocked** client, plus the offline fallback path.
-- **API** — health, meta and chat over real HTTP (in-process, offline).
+- **API** — health, meta, chat, schedule, venue profiles and ops snapshots over real HTTP (in-process, offline).
 
 ---
 

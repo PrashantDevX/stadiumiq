@@ -1,241 +1,148 @@
 /**
- * StadiumIQ frontend controller (vanilla ES module, no dependencies).
+ * StadiumIQ frontend entry point.
  *
- * Responsibilities:
- *  - load metadata (venues / roles / languages) and populate the UI,
- *  - keep the conversation history and talk to POST /api/chat,
- *  - manage accessibility preferences (contrast, text size, language/RTL),
- *  - render messages safely (textContent only — never innerHTML).
+ * A tiny hash-based router (#home, #assistant, #map, #venues, #ops) switches
+ * the five views; shared context (role/venue/language) lives in the header so
+ * every view sees the same selection. No framework, no build step.
  */
+import { api } from './js/api.js';
+import { state, on, emit } from './js/state.js';
+import { initChat, askAssistant, renderSuggestions } from './js/views/chat.js';
+import { initHome } from './js/views/home.js';
+import { initMap } from './js/views/map.js';
+import { initVenues } from './js/views/venues.js';
+import { initOps } from './js/views/ops.js';
+import { restoreSoundPreference, setSoundEnabled, isSoundEnabled, playWhistle } from './js/sound.js';
 
-const els = {
-  log: document.getElementById('chat-log'),
-  form: document.getElementById('chat-form'),
-  input: document.getElementById('chat-input'),
-  send: document.getElementById('send-btn'),
-  role: document.getElementById('role-select'),
-  venue: document.getElementById('venue-select'),
-  language: document.getElementById('language-select'),
-  mobility: document.getElementById('mobility-toggle'),
-  contrast: document.getElementById('contrast-toggle'),
-  textSize: document.getElementById('text-size-toggle'),
-  aiMode: document.getElementById('ai-mode'),
-  suggestions: document.getElementById('suggestions'),
+const VIEWS = ['home', 'assistant', 'map', 'venues', 'ops'];
+const initialized = new Set();
+
+const INIT = {
+  home: initHome,
+  assistant: initChat,
+  map: initMap,
+  venues: initVenues,
+  ops: initOps,
 };
 
-/** In-memory conversation history sent with each request. */
-const history = [];
-let languages = [];
+/* ------------------------------------------------------------- routing --- */
 
-const SUGGESTIONS = {
-  fan: [
-    'How do I get to section 114?',
-    "Where's the nearest halal food?",
-    'How busy is it right now?',
-    'Is there wheelchair access to my seat?',
-    'Best way to get here by transit?',
-  ],
-  volunteer: [
-    'A fan needs step-free access to section 210',
-    'How busy is the main concourse?',
-    'Where is the nearest first-aid station?',
-  ],
-  staff: [
-    'Give me an operations brief',
-    'Report a medical incident at section 130',
-    'What are the crowd levels for egress?',
-  ],
-  organizer: [
-    'Operations brief please',
-    'Sustainability summary for this venue',
-    'Crowd status 15 minutes before kickoff',
-  ],
-};
-
-/* ---------------------------------------------------------------- helpers */
-
-/** Build the request context from the current UI state. */
-function currentContext() {
-  return {
-    role: els.role.value,
-    venueId: els.venue.value,
-    language: els.language.value,
-    mobilityNeeds: els.mobility.checked,
-  };
+function currentRoute() {
+  const hash = window.location.hash.replace('#', '');
+  return VIEWS.includes(hash) ? hash : 'home';
 }
 
-/** Append a chat bubble. `text` is inserted as textContent (XSS-safe). */
-function addMessage(text, who) {
-  const el = document.createElement('div');
-  el.className = `msg ${who}`;
-  const label = document.createElement('span');
-  label.className = 'who';
-  label.textContent = who === 'user' ? 'You' : 'StadiumIQ';
-  const body = document.createElement('span');
-  body.textContent = text;
-  el.append(label, body);
-  els.log.append(el);
-  els.log.scrollTop = els.log.scrollHeight;
-  return el;
-}
-
-function setBusy(busy) {
-  els.send.disabled = busy;
-  els.input.disabled = busy;
-}
-
-/* ------------------------------------------------------------- rendering  */
-
-function renderSuggestions() {
-  els.suggestions.replaceChildren();
-  for (const q of SUGGESTIONS[els.role.value] ?? SUGGESTIONS.fan) {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'chip';
-    chip.textContent = q;
-    chip.addEventListener('click', () => {
-      els.input.value = q;
-      els.input.focus();
-    });
-    els.suggestions.append(chip);
+function showView(name) {
+  for (const view of VIEWS) {
+    document.getElementById(`view-${view}`).hidden = view !== name;
   }
+  for (const link of document.querySelectorAll('.main-nav a')) {
+    if (link.dataset.nav === name) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  }
+  // Views that need data initialise on first visit; venues re-checks selection.
+  if (!initialized.has(name) || name === 'venues' || name === 'ops') {
+    INIT[name]?.();
+    initialized.add(name);
+  }
+  document.getElementById('main').focus({ preventScroll: true });
 }
 
-function applyLanguage(code) {
-  const lang = languages.find((l) => l.code === code);
-  if (!lang) return;
-  document.documentElement.lang = lang.code;
-  document.documentElement.dir = lang.dir;
-}
+/* --------------------------------------------------------- header setup --- */
 
-/* --------------------------------------------------------------- network  */
+function populateSelectors(meta) {
+  const role = document.getElementById('role-select');
+  const venue = document.getElementById('venue-select');
+  const language = document.getElementById('language-select');
 
-async function sendMessage(text) {
-  addMessage(text, 'user');
-  history.push({ role: 'user', content: text });
+  for (const r of meta.roles) role.append(new Option(r.label, r.id));
+  for (const v of meta.venues) venue.append(new Option(`${v.name} — ${v.city}`, v.id));
+  for (const l of meta.languages) language.append(new Option(l.label, l.code));
 
-  const typing = document.createElement('div');
-  typing.className = 'typing';
-  typing.textContent = 'StadiumIQ is thinking…';
-  els.log.append(typing);
-  els.log.scrollTop = els.log.scrollHeight;
-  setBusy(true);
-
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: history, context: currentContext() }),
-    });
-    typing.remove();
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      addMessage(err.message || 'Sorry, something went wrong. Please try again.', 'bot');
-      return;
-    }
-
-    const data = await res.json();
-    addMessage(data.reply, 'bot');
-    history.push({ role: 'assistant', content: data.reply });
-  } catch {
-    typing.remove();
-    addMessage('I could not reach the server. Please check your connection and try again.', 'bot');
-  } finally {
-    setBusy(false);
-    els.input.focus();
-  }
-}
-
-/* ----------------------------------------------------------------- init   */
-
-async function loadMeta() {
-  const res = await fetch('/api/meta');
-  const meta = await res.json();
-  languages = meta.languages;
-
-  for (const r of meta.roles) {
-    els.role.append(new Option(r.label, r.id));
-  }
-  for (const v of meta.venues) {
-    els.venue.append(new Option(`${v.name} — ${v.city}`, v.id));
-  }
-  for (const l of meta.languages) {
-    els.language.append(new Option(l.label, l.code));
-  }
-
-  els.aiMode.textContent =
+  document.getElementById('ai-mode').textContent =
     meta.aiMode === 'gemini' ? `AI: Gemini (${meta.model})` : 'AI: offline mode';
+
+  language.addEventListener('change', () => {
+    const lang = meta.languages.find((l) => l.code === language.value);
+    if (lang) {
+      document.documentElement.lang = lang.code;
+      document.documentElement.dir = lang.dir;
+    }
+  });
 }
 
-function restorePreferences() {
+function initToggles() {
+  const contrast = document.getElementById('contrast-toggle');
+  const textSize = document.getElementById('text-size-toggle');
+  const sound = document.getElementById('sound-toggle');
+
   if (localStorage.getItem('siq-contrast') === 'high') {
     document.documentElement.dataset.contrast = 'high';
-    els.contrast.setAttribute('aria-pressed', 'true');
+    contrast.setAttribute('aria-pressed', 'true');
   }
   if (localStorage.getItem('siq-textsize') === 'large') {
     document.documentElement.dataset.textsize = 'large';
-    els.textSize.setAttribute('aria-pressed', 'true');
+    textSize.setAttribute('aria-pressed', 'true');
   }
-}
+  sound.setAttribute('aria-pressed', String(restoreSoundPreference()));
+  sound.textContent = isSoundEnabled() ? '🔊' : '🔇';
 
-function wireEvents() {
-  els.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = els.input.value.trim();
-    if (!text) return;
-    els.input.value = '';
-    els.input.style.height = 'auto';
-    sendMessage(text);
-  });
-
-  // Enter to send, Shift+Enter for newline.
-  els.input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      els.form.requestSubmit();
-    }
-  });
-
-  // Auto-grow textarea.
-  els.input.addEventListener('input', () => {
-    els.input.style.height = 'auto';
-    els.input.style.height = `${els.input.scrollHeight}px`;
-  });
-
-  els.role.addEventListener('change', renderSuggestions);
-  els.language.addEventListener('change', () => applyLanguage(els.language.value));
-
-  els.contrast.addEventListener('click', () => {
+  contrast.addEventListener('click', () => {
     const high = document.documentElement.dataset.contrast === 'high';
     document.documentElement.dataset.contrast = high ? '' : 'high';
-    els.contrast.setAttribute('aria-pressed', String(!high));
+    contrast.setAttribute('aria-pressed', String(!high));
     localStorage.setItem('siq-contrast', high ? 'normal' : 'high');
   });
 
-  els.textSize.addEventListener('click', () => {
+  textSize.addEventListener('click', () => {
     const large = document.documentElement.dataset.textsize === 'large';
     document.documentElement.dataset.textsize = large ? '' : 'large';
-    els.textSize.setAttribute('aria-pressed', String(!large));
+    textSize.setAttribute('aria-pressed', String(!large));
     localStorage.setItem('siq-textsize', large ? 'normal' : 'large');
+  });
+
+  sound.addEventListener('click', () => {
+    const enabled = setSoundEnabled(!isSoundEnabled());
+    sound.setAttribute('aria-pressed', String(enabled));
+    sound.textContent = enabled ? '🔊' : '🔇';
+    if (enabled) playWhistle();
   });
 }
 
-async function init() {
-  restorePreferences();
-  wireEvents();
+/* ----------------------------------------------------------------- boot --- */
+
+async function boot() {
+  initToggles();
+
   try {
-    await loadMeta();
+    state.meta = await api.meta();
+    populateSelectors(state.meta);
   } catch {
-    els.aiMode.textContent = 'AI: offline mode';
+    document.getElementById('ai-mode').textContent = 'AI: offline mode';
+    state.meta = { venues: [], roles: [], languages: [] };
   }
-  renderSuggestions();
-  applyLanguage(els.language.value);
-  addMessage(
-    'Welcome to StadiumIQ! ⚽ Pick your role and venue above, then ask me anything about getting to your seat, transport, accessibility, food, crowds or staying green.',
-    'bot',
-  );
-  els.input.focus();
+
+  // Cross-view intents raised by map/venue cards.
+  on('navigate', (view) => {
+    window.location.hash = `#${view}`;
+  });
+  on('ask', (question) => {
+    // Ensure the chat view is live before sending.
+    if (!initialized.has('assistant')) {
+      INIT.assistant();
+      initialized.add('assistant');
+    }
+    askAssistant(question);
+  });
+
+  window.addEventListener('hashchange', () => showView(currentRoute()));
+  showView(currentRoute());
+
+  // Role changes refresh the suggestion chips even if chat isn't open yet.
+  document.getElementById('role-select').addEventListener('change', () => {
+    if (initialized.has('assistant')) renderSuggestions();
+  });
 }
 
-init();
+boot();
+export { emit };

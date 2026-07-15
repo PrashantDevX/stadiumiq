@@ -17,9 +17,22 @@ test('registry exposes all expected tools', () => {
     'get_safety_guidance',
     'report_incident',
     'get_operations_brief',
+    'get_match_schedule',
   ]) {
     assert.ok(TOOL_NAMES.includes(name), `missing ${name}`);
   }
+});
+
+test('match schedule tool returns the final at MetLife', () => {
+  const r = executeTool('get_match_schedule', {}, fanCtx);
+  assert.match(r.finale, /2026-07-19/);
+  assert.ok(r.matches.some((m) => m.round.includes('FINAL')));
+});
+
+test('match schedule can be filtered to one venue', () => {
+  const r = executeTool('get_match_schedule', { venue: 'metlife' }, fanCtx);
+  assert.equal(r.filteredBy, 'MetLife Stadium');
+  assert.ok(r.matches.every((m) => m.venue === 'MetLife Stadium'));
 });
 
 test('plan_route_to_seat recommends a gate and steps', () => {

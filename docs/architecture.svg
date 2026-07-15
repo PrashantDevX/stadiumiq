@@ -50,7 +50,7 @@
   <!-- Gemini -->
   <rect x="630" y="90" width="220" height="100" class="box" rx="12"/>
   <text x="740" y="122" text-anchor="middle" class="title">🤖 Google Gemini</text>
-  <text x="740" y="146" text-anchor="middle" class="sub">gemini-2.5-flash</text>
+  <text x="740" y="146" text-anchor="middle" class="sub">gemini-3.1-flash-lite</text>
   <text x="740" y="162" text-anchor="middle" class="sub">decides which tools</text>
   <text x="740" y="178" text-anchor="middle" class="sub">to call &amp; how to reply</text>
 

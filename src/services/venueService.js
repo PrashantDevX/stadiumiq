@@ -42,14 +42,15 @@ export function getVenue(idOrCity) {
   return { ...venue, operations: mergeOperations(venue.operations) };
 }
 
-/** Lightweight list for populating selectors and the operations brief. */
+/** Lightweight list for populating selectors, the map and the explorer. */
 export function listVenues() {
-  return VENUES.map(({ id, name, city, country, capacity, timezone }) => ({
+  return VENUES.map(({ id, name, city, country, capacity, timezone, coordinates }) => ({
     id,
     name,
     city,
     country,
     capacity,
     timezone,
+    coordinates,
   }));
 }
