@@ -17,7 +17,13 @@ test('assigns sequential ids and routes by type', () => {
 });
 
 test('unknown type and severity are normalized', () => {
-  const i = store.add({ venueId: 'sofi', type: 'nonsense', zone: 'z', description: 'd', severity: 'boom' });
+  const i = store.add({
+    venueId: 'sofi',
+    type: 'nonsense',
+    zone: 'z',
+    description: 'd',
+    severity: 'boom',
+  });
   assert.equal(i.type, 'other');
   assert.equal(i.severity, 'medium');
 });
@@ -48,7 +54,9 @@ test('a throwing sink never breaks add()', () => {
   store.setSink(() => {
     throw new Error('firestore down');
   });
-  assert.doesNotThrow(() => store.add({ venueId: 'sofi', type: 'other', zone: 'z', description: 'd' }));
+  assert.doesNotThrow(() =>
+    store.add({ venueId: 'sofi', type: 'other', zone: 'z', description: 'd' }),
+  );
 });
 
 test('Firestore field serializer maps JS types to REST typed values', () => {

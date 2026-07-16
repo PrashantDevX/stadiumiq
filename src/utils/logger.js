@@ -12,7 +12,6 @@ function emit(level, message, meta) {
   const line = isProduction
     ? JSON.stringify(entry)
     : `[${level.toUpperCase()}] ${message}${meta ? ' ' + JSON.stringify(meta) : ''}`;
-  // eslint-disable-next-line no-console
   (level === 'error' ? console.error : console.log)(line);
 }
 

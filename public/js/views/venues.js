@@ -40,10 +40,24 @@ async function showDetail(venueId) {
     const grid = document.createElement('div');
     grid.className = 'detail-grid';
     grid.append(
-      block('🚪 Gates', v.operations.gates.map((g) => `Gate ${g.id} — ${g.compass}${g.security === 'express' ? ' · express lane' : ''}${g.accessible ? ' · accessible' : ''}`)),
-      block('🚆 Getting there', [v.transport.rail, v.transport.shuttle, v.transport.rideshare, v.transport.parking]),
+      block(
+        '🚪 Gates',
+        v.operations.gates.map(
+          (g) =>
+            `Gate ${g.id} — ${g.compass}${g.security === 'express' ? ' · express lane' : ''}${g.accessible ? ' · accessible' : ''}`,
+        ),
+      ),
+      block('🚆 Getting there', [
+        v.transport.rail,
+        v.transport.shuttle,
+        v.transport.rideshare,
+        v.transport.parking,
+      ]),
       block('♿ Accessibility', v.operations.accessibility.services.slice(0, 5)),
-      block('🌱 Sustainability', [v.operations.sustainability.recycling, v.operations.sustainability.transit_incentive]),
+      block('🌱 Sustainability', [
+        v.operations.sustainability.recycling,
+        v.operations.sustainability.transit_incentive,
+      ]),
       block('🍽️ Good to know', [
         `Dietary: ${v.operations.amenities.dietary.join(', ')}`,
         v.operations.amenities.first_aid,

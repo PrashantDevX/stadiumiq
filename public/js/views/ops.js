@@ -89,7 +89,8 @@ async function refresh() {
     } else {
       const empty = document.createElement('p');
       empty.style.fontSize = '0.85rem';
-      empty.textContent = 'No incidents logged. Report one via the AI Assistant as Staff/Volunteer.';
+      empty.textContent =
+        'No incidents logged. Report one via the AI Assistant as Staff/Volunteer.';
       inc.append(empty);
     }
 

@@ -48,7 +48,8 @@ export function createApp() {
   // --- CORS: explicit allow-list, or open in development. ---
   app.use(
     cors({
-      origin: config.cors.origin === '*' ? true : config.cors.origin.split(',').map((s) => s.trim()),
+      origin:
+        config.cors.origin === '*' ? true : config.cors.origin.split(',').map((s) => s.trim()),
     }),
   );
 

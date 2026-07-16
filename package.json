@@ -11,7 +11,12 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "test": "node --test",
-    "test:watch": "node --test --watch"
+    "test:watch": "node --test --watch",
+    "test:coverage": "node --test --experimental-test-coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"{api,public,src,test}/**/*.{js,json,css,html}\" \"*.{js,json}\" \".github/**/*.yml\"",
+    "format:check": "prettier --check \"{api,public,src,test}/**/*.{js,json,css,html}\" \"*.{js,json}\" \".github/**/*.yml\""
   },
   "keywords": [
     "fifa-world-cup-2026",
@@ -30,5 +35,11 @@
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "prettier": "^3.9.5"
   }
 }

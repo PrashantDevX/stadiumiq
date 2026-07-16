@@ -33,7 +33,10 @@ const INTENTS = [
   {
     tool: 'plan_transport',
     test: /get (there|here)|transit|train|metro|subway|rail|park(ing)?|drive|driving|rideshare|uber|lyft|shuttle|\bbus\b|leav(e|ing)|depart|go home/i,
-    args: (text) => ({ mode: detectMode(text), direction: /leav|depart|go home|after the (match|game)/i.test(text) ? 'depart' : 'arrive' }),
+    args: (text) => ({
+      mode: detectMode(text),
+      direction: /leav|depart|go home|after the (match|game)/i.test(text) ? 'depart' : 'arrive',
+    }),
   },
   {
     tool: 'get_crowd_status',
@@ -97,7 +100,8 @@ function detectAmenity(text) {
 }
 
 function detectSection(text) {
-  const m = String(text).match(/(?:section|sec|seat)\s*(\d{1,3})/i) ?? String(text).match(/\b(\d{2,3})\b/);
+  const m =
+    String(text).match(/(?:section|sec|seat)\s*(\d{1,3})/i) ?? String(text).match(/\b(\d{2,3})\b/);
   return m ? m[1] : null;
 }
 
@@ -113,7 +117,10 @@ export function classifyIntent(text) {
 /* ---- Formatters: structured tool result -> friendly text ---------------- */
 
 function bullet(lines) {
-  return lines.filter(Boolean).map((l) => `• ${l}`).join('\n');
+  return lines
+    .filter(Boolean)
+    .map((l) => `• ${l}`)
+    .join('\n');
 }
 
 const FORMATTERS = {
@@ -133,7 +140,9 @@ const FORMATTERS = {
   plan_transport: (r) =>
     `Getting ${r.direction === 'depart' ? 'away from' : 'to'} ${r.venue}:\n${bullet([
       r.chosenOption ? `Best for you: ${r.chosenOption.label} — ${r.chosenOption.detail}` : null,
-      ...r.allOptions.filter((o) => !r.chosenOption || o.mode !== r.chosenOption.mode).map((o) => `${o.label}: ${o.detail}`),
+      ...r.allOptions
+        .filter((o) => !r.chosenOption || o.mode !== r.chosenOption.mode)
+        .map((o) => `${o.label}: ${o.detail}`),
       r.departTip,
       `🌱 ${r.sustainabilityNudge}`,
     ])}`,

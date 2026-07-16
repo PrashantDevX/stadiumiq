@@ -22,7 +22,10 @@ export const reportIncident = {
           type: 'string',
           enum: ['crowd', 'medical', 'security', 'accessibility', 'lost_person', 'spill', 'other'],
         },
-        zone: { type: 'string', description: 'Where it is happening, e.g. "Gate C", "Section 210".' },
+        zone: {
+          type: 'string',
+          description: 'Where it is happening, e.g. "Gate C", "Section 210".',
+        },
         description: { type: 'string', description: 'Brief description of the issue.' },
         severity: { type: 'string', enum: ['low', 'medium', 'high', 'critical'] },
       },
@@ -56,7 +59,10 @@ export const getOperationsBrief = {
     parametersJsonSchema: {
       type: 'object',
       properties: {
-        minutesToKickoff: { type: 'number', description: 'Minutes until kickoff (negative if under way).' },
+        minutesToKickoff: {
+          type: 'number',
+          description: 'Minutes until kickoff (negative if under way).',
+        },
       },
     },
   },
@@ -73,7 +79,12 @@ export const getOperationsBrief = {
       venue: venue.name,
       crowd: { level: crowd.level, estimatedWaitMinutes: crowd.waitMinutes, advice: crowd.advice },
       incidents,
-      recentIncidents: recent.map((i) => ({ id: i.id, type: i.type, zone: i.zone, severity: i.severity })),
+      recentIncidents: recent.map((i) => ({
+        id: i.id,
+        type: i.type,
+        zone: i.zone,
+        severity: i.severity,
+      })),
       recommendation:
         crowd.level === 'very_high'
           ? 'Open all express lanes and stage stewards at the busiest gates; hold non-urgent concourse maintenance.'

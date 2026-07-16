@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="auto">
   <head>
     <meta charset="UTF-8" />
@@ -10,24 +10,56 @@
       content="StadiumIQ — a GenAI match-day companion for the FIFA World Cup 2026: AI assistant, interactive stadium map, venue explorer and live operations room."
     />
     <title>StadiumIQ — FIFA World Cup 2026 Companion</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffffff' stroke='%230b3d26' stroke-width='3'/%3E%3Cpath d='M32 14 l10 7 -4 12 h-12 l-4 -12 z' fill='%230b3d26'/%3E%3C/svg%3E" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffffff' stroke='%230b3d26' stroke-width='3'/%3E%3Cpath d='M32 14 l10 7 -4 12 h-12 l-4 -12 z' fill='%230b3d26'/%3E%3C/svg%3E"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="app-header">
-      <svg class="pitch-doodle" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <svg
+        class="pitch-doodle"
+        viewBox="0 0 1200 80"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
         <defs>
           <pattern id="stripes" width="120" height="80" patternUnits="userSpaceOnUse">
             <rect width="60" height="80" fill="rgba(255,255,255,0.05)" />
           </pattern>
         </defs>
         <rect width="1200" height="80" fill="url(#stripes)" />
-        <circle cx="600" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+        <circle
+          cx="600"
+          cy="40"
+          r="34"
+          fill="none"
+          stroke="rgba(255,255,255,0.25)"
+          stroke-width="2"
+        />
         <line x1="600" y1="0" x2="600" y2="80" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
-        <rect x="0" y="18" width="46" height="44" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
-        <rect x="1154" y="18" width="46" height="44" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+        <rect
+          x="0"
+          y="18"
+          width="46"
+          height="44"
+          fill="none"
+          stroke="rgba(255,255,255,0.25)"
+          stroke-width="2"
+        />
+        <rect
+          x="1154"
+          y="18"
+          width="46"
+          height="44"
+          fill="none"
+          stroke="rgba(255,255,255,0.25)"
+          stroke-width="2"
+        />
       </svg>
 
       <div class="topbar">
@@ -36,7 +68,13 @@
             <svg viewBox="0 0 64 64" width="40" height="40" role="img" aria-label="StadiumIQ logo">
               <circle cx="32" cy="32" r="30" fill="#ffffff" stroke="#0b3d26" stroke-width="2.5" />
               <path d="M32 14 l10 7 -4 12 h-12 l-4 -12 z" fill="#0b3d26" />
-              <path d="M32 14 v-1 M42 21 l6 -3 M38 33 l7 4 M26 33 l-7 4 M22 21 l-6 -3" stroke="#0b3d26" stroke-width="2.2" fill="none" stroke-linecap="round" />
+              <path
+                d="M32 14 v-1 M42 21 l6 -3 M38 33 l7 4 M26 33 l-7 4 M22 21 l-6 -3"
+                stroke="#0b3d26"
+                stroke-width="2.2"
+                fill="none"
+                stroke-linecap="round"
+              />
             </svg>
           </span>
           <span class="brand-text">
@@ -54,17 +92,52 @@
         </nav>
 
         <div class="a11y-bar" role="group" aria-label="Display and sound options">
-          <button type="button" id="contrast-toggle" class="pill" aria-pressed="false" title="Toggle high contrast">HC</button>
-          <button type="button" id="text-size-toggle" class="pill" aria-pressed="false" title="Toggle larger text">A+</button>
-          <button type="button" id="sound-toggle" class="pill" aria-pressed="false" title="Toggle stadium sounds">🔊</button>
+          <button
+            type="button"
+            id="contrast-toggle"
+            class="pill"
+            aria-pressed="false"
+            title="Toggle high contrast"
+          >
+            HC
+          </button>
+          <button
+            type="button"
+            id="text-size-toggle"
+            class="pill"
+            aria-pressed="false"
+            title="Toggle larger text"
+          >
+            A+
+          </button>
+          <button
+            type="button"
+            id="sound-toggle"
+            class="pill"
+            aria-pressed="false"
+            title="Toggle stadium sounds"
+          >
+            🔊
+          </button>
         </div>
       </div>
 
       <div class="context-bar" role="group" aria-label="Assistant context">
-        <label class="field"><span>I am a</span><select id="role-select" aria-label="Your role"></select></label>
-        <label class="field"><span>Venue</span><select id="venue-select" aria-label="Stadium"></select></label>
-        <label class="field"><span>Language</span><select id="language-select" aria-label="Language"></select></label>
-        <label class="field checkbox"><input type="checkbox" id="mobility-toggle" /><span>Step-free routes</span></label>
+        <label class="field"
+          ><span>I am a</span
+          ><select id="role-select" aria-label="Your role"></select
+        ></label>
+        <label class="field"
+          ><span>Venue</span
+          ><select id="venue-select" aria-label="Stadium"></select
+        ></label>
+        <label class="field"
+          ><span>Language</span
+          ><select id="language-select" aria-label="Language"></select
+        ></label>
+        <label class="field checkbox"
+          ><input type="checkbox" id="mobility-toggle" /><span>Step-free routes</span></label
+        >
         <span id="ai-mode" class="mode-badge" aria-live="polite"></span>
       </div>
     </header>
@@ -75,7 +148,9 @@
         <div class="hero">
           <div class="hero-inner">
             <p class="hero-kicker">USA · CANADA · MEXICO — 11 JUNE → 19 JULY 2026</p>
-            <h2 id="home-title">It’s <em>Finals Week</em>.<br />Your smartest way around the World Cup.</h2>
+            <h2 id="home-title">
+              It’s <em>Finals Week</em>.<br />Your smartest way around the World Cup.
+            </h2>
             <p class="hero-sub">
               One GenAI companion for fans, volunteers, staff and organizers — navigation, crowds,
               accessibility, transport, sustainability and live operations across all 16 stadiums.
@@ -105,7 +180,10 @@
           <a class="feature-card" href="#assistant">
             <span class="feature-icon" aria-hidden="true">🧠</span>
             <strong>GenAI Assistant</strong>
-            <p>Ask anything in 6 languages — routes to your seat, food, crowds, safety. Powered by Gemini function-calling.</p>
+            <p>
+              Ask anything in 6 languages — routes to your seat, food, crowds, safety. Powered by
+              Gemini function-calling.
+            </p>
           </a>
           <a class="feature-card" href="#map">
             <span class="feature-icon" aria-hidden="true">🗺️</span>
@@ -115,12 +193,17 @@
           <a class="feature-card" href="#venues">
             <span class="feature-icon" aria-hidden="true">🏟️</span>
             <strong>Venue Explorer</strong>
-            <p>Gates, transit, accessibility services, sustainability and fixtures for every stadium.</p>
+            <p>
+              Gates, transit, accessibility services, sustainability and fixtures for every stadium.
+            </p>
           </a>
           <a class="feature-card" href="#ops">
             <span class="feature-icon" aria-hidden="true">📡</span>
             <strong>Operations Room</strong>
-            <p>Live gate-load meters, crowd forecasts and incident intelligence for staff & organizers.</p>
+            <p>
+              Live gate-load meters, crowd forecasts and incident intelligence for staff &
+              organizers.
+            </p>
           </a>
         </div>
       </section>
@@ -128,24 +211,52 @@
       <!-- ============================ ASSISTANT ============================ -->
       <section id="view-assistant" class="view" hidden aria-labelledby="assistant-title">
         <h2 id="assistant-title" class="view-title">AI Assistant</h2>
-        <section id="chat-log" class="chat-log" aria-live="polite" aria-label="Conversation" role="log"></section>
-        <div id="suggestions" class="suggestions" aria-label="Suggested questions" role="group"></div>
+        <section
+          id="chat-log"
+          class="chat-log"
+          aria-live="polite"
+          aria-label="Conversation"
+          role="log"
+        ></section>
+        <div
+          id="suggestions"
+          class="suggestions"
+          aria-label="Suggested questions"
+          role="group"
+        ></div>
         <form id="chat-form" class="chat-form" autocomplete="off">
           <label class="visually-hidden" for="chat-input">Ask StadiumIQ a question</label>
-          <textarea id="chat-input" name="message" rows="1" placeholder="Ask about gates, transport, accessibility, food…" aria-describedby="input-hint" required></textarea>
+          <textarea
+            id="chat-input"
+            name="message"
+            rows="1"
+            placeholder="Ask about gates, transport, accessibility, food…"
+            aria-describedby="input-hint"
+            required
+          ></textarea>
           <button type="submit" id="send-btn" class="send-btn">
             <span class="visually-hidden">Send message</span><span aria-hidden="true">Send ➤</span>
           </button>
-          <p id="input-hint" class="visually-hidden">Press Enter to send, Shift plus Enter for a new line.</p>
+          <p id="input-hint" class="visually-hidden">
+            Press Enter to send, Shift plus Enter for a new line.
+          </p>
         </form>
       </section>
 
       <!-- =============================== MAP =============================== -->
       <section id="view-map" class="view" hidden aria-labelledby="map-title">
         <h2 id="map-title" class="view-title">Host Stadium Map</h2>
-        <p class="view-sub">16 stadiums · 3 nations. Select a pin to see the venue — activate it to open the full guide.</p>
+        <p class="view-sub">
+          16 stadiums · 3 nations. Select a pin to see the venue — activate it to open the full
+          guide.
+        </p>
         <div class="map-wrap">
-          <svg id="venue-map" viewBox="0 0 1000 640" role="group" aria-label="Map of the 16 host stadiums across the USA, Canada and Mexico"></svg>
+          <svg
+            id="venue-map"
+            viewBox="0 0 1000 640"
+            role="group"
+            aria-label="Map of the 16 host stadiums across the USA, Canada and Mexico"
+          ></svg>
           <div id="map-card" class="map-card" hidden></div>
         </div>
         <div class="map-legend" aria-hidden="true">
@@ -165,12 +276,25 @@
       <!-- =============================== OPS =============================== -->
       <section id="view-ops" class="view" hidden aria-labelledby="ops-title">
         <h2 id="ops-title" class="view-title">Operations Room</h2>
-        <p class="view-sub">Real-time decision support: gate loads, crowd forecast and incident intelligence.</p>
+        <p class="view-sub">
+          Real-time decision support: gate loads, crowd forecast and incident intelligence.
+        </p>
         <div class="ops-controls">
-          <label class="field"><span>Venue</span><select id="ops-venue" aria-label="Operations venue"></select></label>
+          <label class="field"
+            ><span>Venue</span
+            ><select id="ops-venue" aria-label="Operations venue"></select
+          ></label>
           <label class="field slider-field">
             <span>Time to kickoff: <output id="ops-minutes-out">60</output> min</span>
-            <input type="range" id="ops-minutes" min="-60" max="240" step="15" value="60" aria-label="Minutes to kickoff" />
+            <input
+              type="range"
+              id="ops-minutes"
+              min="-60"
+              max="240"
+              step="15"
+              value="60"
+              aria-label="Minutes to kickoff"
+            />
           </label>
           <button type="button" id="ops-refresh" class="btn btn-primary btn-sm">Refresh</button>
         </div>

@@ -48,12 +48,20 @@ test('plan_route_to_seat prioritises accessibility when mobility needs are set',
 });
 
 test('authorization: a fan cannot report an incident', () => {
-  const r = executeTool('report_incident', { type: 'spill', zone: 'Gate C', description: 'water' }, fanCtx);
+  const r = executeTool(
+    'report_incident',
+    { type: 'spill', zone: 'Gate C', description: 'water' },
+    fanCtx,
+  );
   assert.equal(r.error, 'not_authorized');
 });
 
 test('authorization: staff can report an incident and it is routed', () => {
-  const r = executeTool('report_incident', { type: 'medical', zone: 'Sec 130', description: 'fan unwell' }, staffCtx);
+  const r = executeTool(
+    'report_incident',
+    { type: 'medical', zone: 'Sec 130', description: 'fan unwell' },
+    staffCtx,
+  );
   assert.equal(r.logged, true);
   assert.match(r.incidentId, /^INC-\d{4}$/);
   assert.match(r.routedTo, /Medical/);

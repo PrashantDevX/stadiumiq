@@ -19,7 +19,10 @@ test('runs the function-calling loop and returns the final text', async () => {
     {
       text: '',
       functionCalls: [{ name: 'get_crowd_status', args: {} }],
-      candidateContent: { role: 'model', parts: [{ functionCall: { name: 'get_crowd_status', args: {} } }] },
+      candidateContent: {
+        role: 'model',
+        parts: [{ functionCall: { name: 'get_crowd_status', args: {} } }],
+      },
     },
     { text: 'It is moderately busy right now.', functionCalls: [], candidateContent: null },
   ]);

@@ -16,7 +16,8 @@ const ADVICE = {
   low: 'Concourses are quiet — a great time to move around, grab food, or find your seat.',
   moderate: 'Steady flow. Allow a few extra minutes at security and concessions.',
   high: 'Busy. Use express or less-central gates and expect queues at popular concessions.',
-  very_high: 'Peak crowd. Avoid the main gates, follow steward directions, and keep to the wider concourse routes.',
+  very_high:
+    'Peak crowd. Avoid the main gates, follow steward directions, and keep to the wider concourse routes.',
 };
 
 /**

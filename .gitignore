@@ -33,3 +33,5 @@ coverage/
 .nyc_output/
 GUIDE.md
 context.txt
+
+.vercel

@@ -8,6 +8,7 @@
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 ![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)
 ![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-brightgreen)
+![CI](https://github.com/PrashantDevX/stadiumiq/actions/workflows/ci.yml/badge.svg)
 
 ### 🌐 Live demo: **https://stadiumiq-chi.vercel.app**
 
@@ -239,8 +240,11 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 
 ```bash
 npm test
+npm run test:coverage
+npm run lint
+npm run format:check
 ```
-55 tests, no external dependencies, covering:
+55 tests, no external dependencies, and over 89% line coverage, covering:
 - **Decision engine** — routing, accessibility-first logic, dietary options, transport nudges, match schedule, graceful errors.
 - **Authorization** — fans cannot call staff-only tools; staff can and incidents are routed.
 - **Crowd model** — arrival/egress curve, express-gate relief, bounds.
@@ -251,12 +255,16 @@ npm test
 - **Assistant** — the full Gemini function-call loop driven by a **mocked** client, plus the offline fallback path.
 - **API** — health, meta, chat, schedule, venue profiles and ops snapshots over real HTTP (in-process, offline).
 
+Every push and pull request to `main` runs the same formatting, lint, and
+coverage checks in GitHub Actions on Node 20 and 22. This makes the quality
+baseline reproducible for reviewers and contributors.
+
 ---
 
 ## 9. Evaluation-criteria checklist
 
 - **Problem-statement alignment** — one persona-led design covering *all eight* verticals across all 16 venues; features mapped in §3.
-- **Code quality** — small single-responsibility ESM modules, JSDoc, injectable dependencies, DRY data, consistent style.
+- **Code quality** — small single-responsibility ESM modules, JSDoc, injectable dependencies, DRY data, consistent style, ESLint/Prettier, and CI quality gates.
 - **Security** — see §10.
 - **Efficiency** — lean dependency set, in-memory data (no DB), capped tool-loop & trimmed history, stateless server, offline mode avoids needless API calls.
 - **Testing** — see §8.
@@ -273,6 +281,7 @@ npm test
 - **Firestore security rules deny all direct client access**; writes go only through the trusted backend.
 - Firestore is integrated via a **zero-dependency REST client**, so cloud persistence adds no third-party code.
 - `npm audit`: **0 vulnerabilities**.
+- A private reporting path and coordinated disclosure guidance live in [`SECURITY.md`](SECURITY.md).
 
 ## 11. Accessibility features
 - Semantic HTML, a **skip link**, labelled controls, and an `aria-live` conversation log that announces replies to screen readers.

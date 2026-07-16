@@ -70,10 +70,28 @@ export function initMap() {
   // Backdrop: subtle graticule so the pins read as a map, not a scatter plot.
   svg.append(svgEl('rect', { width: W, height: H, fill: 'transparent' }));
   for (let x = PAD; x <= W - PAD; x += (W - PAD * 2) / 8) {
-    svg.append(svgEl('line', { x1: x, y1: PAD / 2, x2: x, y2: H - PAD / 2, stroke: 'currentColor', 'stroke-opacity': '0.06' }));
+    svg.append(
+      svgEl('line', {
+        x1: x,
+        y1: PAD / 2,
+        x2: x,
+        y2: H - PAD / 2,
+        stroke: 'currentColor',
+        'stroke-opacity': '0.06',
+      }),
+    );
   }
   for (let y = PAD; y <= H - PAD; y += (H - PAD * 2) / 6) {
-    svg.append(svgEl('line', { x1: PAD / 2, y1: y, x2: W - PAD / 2, y2: y, stroke: 'currentColor', 'stroke-opacity': '0.06' }));
+    svg.append(
+      svgEl('line', {
+        x1: PAD / 2,
+        y1: y,
+        x2: W - PAD / 2,
+        y2: y,
+        stroke: 'currentColor',
+        'stroke-opacity': '0.06',
+      }),
+    );
   }
 
   const toXY = project(venues);
@@ -83,7 +101,14 @@ export function initMap() {
     g.setAttribute('aria-label', `${venue.name}, ${venue.city}, ${venue.country}`);
 
     g.append(
-      svgEl('circle', { cx: x, cy: y, r: 8, fill: COUNTRY_COLOR[venue.country] ?? '#888', stroke: '#fff', 'stroke-width': 2 }),
+      svgEl('circle', {
+        cx: x,
+        cy: y,
+        r: 8,
+        fill: COUNTRY_COLOR[venue.country] ?? '#888',
+        stroke: '#fff',
+        'stroke-width': 2,
+      }),
     );
     const label = svgEl('text', { x: x + 12, y: y + 4 });
     label.textContent = venue.city.split('/')[0].trim();

@@ -71,7 +71,7 @@ export const planRouteToSeat = {
   declaration: {
     name: 'plan_route_to_seat',
     description:
-      'Recommend the best gate and a step-by-step route to a seat, factoring in the section, the user\'s mobility needs and live crowd levels. Use whenever someone asks how to reach their seat/section or which gate to use.',
+      "Recommend the best gate and a step-by-step route to a seat, factoring in the section, the user's mobility needs and live crowd levels. Use whenever someone asks how to reach their seat/section or which gate to use.",
     parametersJsonSchema: {
       type: 'object',
       properties: {
@@ -105,7 +105,7 @@ export const planRouteToSeat = {
     const crowd = estimateCrowd({ minutesToKickoff, gateFlow: primaryFlow });
     const expressGate = gates.find((g) => g.security === 'express' && g.id !== primary.id);
     const alternative =
-      crowd.level === 'high' || crowd.level === 'very_high' ? expressGate ?? null : null;
+      crowd.level === 'high' || crowd.level === 'very_high' ? (expressGate ?? null) : null;
 
     const steps = [
       `Enter via Gate ${primary.id} on the ${primary.compass} side${mobilityNeeds ? ' (step-free and accessible)' : ''}.`,
@@ -121,7 +121,9 @@ export const planRouteToSeat = {
       recommendedGate: `Gate ${primary.id} (${primary.compass})`,
       accessibleRoute: mobilityNeeds,
       crowd: { level: crowd.level, estimatedWaitMinutes: crowd.waitMinutes },
-      alternativeGate: alternative ? `Gate ${alternative.id} (${alternative.compass}) — quieter/express` : null,
+      alternativeGate: alternative
+        ? `Gate ${alternative.id} (${alternative.compass}) — quieter/express`
+        : null,
       steps,
     };
   },

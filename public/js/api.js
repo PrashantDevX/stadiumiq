@@ -13,10 +13,13 @@ async function request(path, options) {
 
 export const api = {
   meta: () => request('/api/meta'),
-  schedule: (venueId) => request(`/api/schedule${venueId ? `?venue=${encodeURIComponent(venueId)}` : ''}`),
+  schedule: (venueId) =>
+    request(`/api/schedule${venueId ? `?venue=${encodeURIComponent(venueId)}` : ''}`),
   venue: (id) => request(`/api/venues/${encodeURIComponent(id)}`),
   ops: (id, minutes) =>
-    request(`/api/venues/${encodeURIComponent(id)}/ops?minutesToKickoff=${encodeURIComponent(minutes)}`),
+    request(
+      `/api/venues/${encodeURIComponent(id)}/ops?minutesToKickoff=${encodeURIComponent(minutes)}`,
+    ),
   chat: (messages, context) =>
     request('/api/chat', {
       method: 'POST',

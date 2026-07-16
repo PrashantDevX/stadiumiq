@@ -41,12 +41,17 @@ export const planTransport = {
     if (!venue) return { error: 'venue_not_found', message: 'I could not find that venue.' };
 
     const t = venue.transport ?? {};
-    const requested = args.mode && args.mode !== 'any' ? args.mode : t.recommended ?? 'rail';
+    const requested = args.mode && args.mode !== 'any' ? args.mode : (t.recommended ?? 'rail');
     const direction = args.direction ?? 'arrive';
 
     const options = ['rail', 'shuttle', 'rideshare', 'parking']
       .filter((m) => t[m])
-      .map((m) => ({ mode: m, label: MODE_LABELS[m], detail: t[m], recommended: m === (t.recommended ?? 'rail') }));
+      .map((m) => ({
+        mode: m,
+        label: MODE_LABELS[m],
+        detail: t[m],
+        recommended: m === (t.recommended ?? 'rail'),
+      }));
 
     const chosen = options.find((o) => o.mode === requested) ?? options[0];
     const greener = requested === 'parking' || requested === 'rideshare';

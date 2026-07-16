@@ -59,7 +59,13 @@ router.get('/venues/:id/ops', (req, res) => {
     recentIncidents: incidentStore
       .list({ venueId: venue.id })
       .slice(0, 6)
-      .map((i) => ({ id: i.id, type: i.type, zone: i.zone, severity: i.severity, status: i.status })),
+      .map((i) => ({
+        id: i.id,
+        type: i.type,
+        zone: i.zone,
+        severity: i.severity,
+        status: i.status,
+      })),
   });
 });
 

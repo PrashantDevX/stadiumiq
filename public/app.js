@@ -12,7 +12,12 @@ import { initHome } from './js/views/home.js';
 import { initMap } from './js/views/map.js';
 import { initVenues } from './js/views/venues.js';
 import { initOps } from './js/views/ops.js';
-import { restoreSoundPreference, setSoundEnabled, isSoundEnabled, playWhistle } from './js/sound.js';
+import {
+  restoreSoundPreference,
+  setSoundEnabled,
+  isSoundEnabled,
+  playWhistle,
+} from './js/sound.js';
 
 const VIEWS = ['home', 'assistant', 'map', 'venues', 'ops'];
 const initialized = new Set();

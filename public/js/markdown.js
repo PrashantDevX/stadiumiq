@@ -50,10 +50,18 @@ export function renderMarkdown(text) {
     const heading = line.match(/^\s*#{1,4}\s+(.*)$/);
 
     if (bullet) {
-      if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; }
+      if (list !== 'ul') {
+        closeList();
+        out.push('<ul>');
+        list = 'ul';
+      }
       out.push(`<li>${inline(bullet[1])}</li>`);
     } else if (numbered) {
-      if (list !== 'ol') { closeList(); out.push('<ol>'); list = 'ol'; }
+      if (list !== 'ol') {
+        closeList();
+        out.push('<ol>');
+        list = 'ol';
+      }
       out.push(`<li>${inline(numbered[1])}</li>`);
     } else if (heading) {
       closeList();

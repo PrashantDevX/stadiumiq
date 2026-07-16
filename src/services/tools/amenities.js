@@ -5,14 +5,39 @@
 import { getVenue } from '../venueService.js';
 
 const AMENITY_RESPONDERS = {
-  food: (am) => ({ label: 'Food & drink', detail: `Concessions on every concourse. Dietary options: ${am.dietary.join(', ')}.` }),
-  dietary: (am) => ({ label: 'Dietary options', detail: `Available across concessions: ${am.dietary.join(', ')}. Look for the labelled kiosks.` }),
-  restroom: () => ({ label: 'Restrooms', detail: 'Restrooms (including accessible and all-gender) are on every concourse near each gate.' }),
+  food: (am) => ({
+    label: 'Food & drink',
+    detail: `Concessions on every concourse. Dietary options: ${am.dietary.join(', ')}.`,
+  }),
+  dietary: (am) => ({
+    label: 'Dietary options',
+    detail: `Available across concessions: ${am.dietary.join(', ')}. Look for the labelled kiosks.`,
+  }),
+  restroom: () => ({
+    label: 'Restrooms',
+    detail:
+      'Restrooms (including accessible and all-gender) are on every concourse near each gate.',
+  }),
   water: (am) => ({ label: 'Drinking water', detail: am.water }),
   first_aid: (am) => ({ label: 'First aid', detail: am.first_aid }),
-  family: (am) => ({ label: 'Family room', detail: am.family_room ? 'A family room with changing facilities is on the main concourse.' : 'No dedicated family room.' }),
-  prayer: (am) => ({ label: 'Prayer / reflection room', detail: am.prayer_room ? 'A multi-faith prayer & reflection room is available — ask Guest Services for the nearest one.' : 'No dedicated prayer room.' }),
-  nursing: (am) => ({ label: 'Nursing room', detail: am.nursing_room ? 'A private nursing room is available on the main concourse.' : 'No dedicated nursing room.' }),
+  family: (am) => ({
+    label: 'Family room',
+    detail: am.family_room
+      ? 'A family room with changing facilities is on the main concourse.'
+      : 'No dedicated family room.',
+  }),
+  prayer: (am) => ({
+    label: 'Prayer / reflection room',
+    detail: am.prayer_room
+      ? 'A multi-faith prayer & reflection room is available — ask Guest Services for the nearest one.'
+      : 'No dedicated prayer room.',
+  }),
+  nursing: (am) => ({
+    label: 'Nursing room',
+    detail: am.nursing_room
+      ? 'A private nursing room is available on the main concourse.'
+      : 'No dedicated nursing room.',
+  }),
   lost_and_found: (am) => ({ label: 'Lost & found', detail: am.lost_and_found }),
 };
 
@@ -27,7 +52,18 @@ export const findAmenities = {
       properties: {
         type: {
           type: 'string',
-          enum: ['food', 'dietary', 'restroom', 'water', 'first_aid', 'family', 'prayer', 'nursing', 'lost_and_found', 'all'],
+          enum: [
+            'food',
+            'dietary',
+            'restroom',
+            'water',
+            'first_aid',
+            'family',
+            'prayer',
+            'nursing',
+            'lost_and_found',
+            'all',
+          ],
           description: 'Which amenity to locate. Use "all" for a full list.',
         },
       },

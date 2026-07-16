@@ -11,8 +11,7 @@
 let ctx = null;
 let enabled = false;
 
-const prefersReducedMotion = () =>
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function audioContext() {
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();

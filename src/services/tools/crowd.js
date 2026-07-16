@@ -38,14 +38,17 @@ export const getCrowdStatus = {
     // Central/main areas concentrate flow; named express gates relieve it.
     const gateFlow = /main|central|entrance|plaza/.test(zone)
       ? 'central'
-      : venue.operations.gates.find((g) => zone.includes(g.id.toLowerCase()) && g.security === 'express')
+      : venue.operations.gates.find(
+            (g) => zone.includes(g.id.toLowerCase()) && g.security === 'express',
+          )
         ? 'express'
         : 'standard';
 
     const crowd = estimateCrowd({ minutesToKickoff, gateFlow, isEgress: args.isEgress ?? false });
 
     // Suggest the quietest gate as a concrete alternative.
-    const quietest = venue.operations.gates.find((g) => g.security === 'express') ?? venue.operations.gates[0];
+    const quietest =
+      venue.operations.gates.find((g) => g.security === 'express') ?? venue.operations.gates[0];
 
     return {
       venue: venue.name,

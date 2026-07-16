@@ -62,7 +62,7 @@ async function getAccessToken() {
   }
 
   let token;
-  let expiresIn = 3600;
+  let expiresIn;
 
   if (serviceAccount) {
     const res = await fetch(OAUTH_TOKEN_URL, {
@@ -101,9 +101,7 @@ async function getAccessToken() {
 function loadServiceAccount() {
   const inline = (process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? '').trim();
   if (inline) {
-    const json = inline.startsWith('{')
-      ? inline
-      : Buffer.from(inline, 'base64').toString('utf8');
+    const json = inline.startsWith('{') ? inline : Buffer.from(inline, 'base64').toString('utf8');
     const raw = JSON.parse(json);
     return { client_email: raw.client_email, private_key: raw.private_key };
   }

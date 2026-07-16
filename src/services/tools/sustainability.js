@@ -9,7 +9,7 @@ export const getSustainabilityTips = {
   declaration: {
     name: 'get_sustainability_tips',
     description:
-      'Return the venue\'s sustainability facilities and practical tips (recycling, reusable cups, water refill, low-emission travel). Use for eco / green / recycling / waste questions.',
+      "Return the venue's sustainability facilities and practical tips (recycling, reusable cups, water refill, low-emission travel). Use for eco / green / recycling / waste questions.",
     parametersJsonSchema: {
       type: 'object',
       properties: {},

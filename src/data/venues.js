@@ -27,7 +27,8 @@ export const DEFAULT_OPERATIONS = Object.freeze({
   ],
   accessibility: {
     step_free: true,
-    accessible_seating: 'Wheelchair and companion seating in every tier; reachable from any gate via elevator.',
+    accessible_seating:
+      'Wheelchair and companion seating in every tier; reachable from any gate via elevator.',
     services: [
       'Wheelchair escort from drop-off to seat',
       'Quiet / sensory room with sensory bags',
@@ -109,7 +110,8 @@ export const VENUES = Object.freeze([
     operations: {
       accessibility: {
         step_free: true,
-        accessible_seating: 'Fully step-free bowl; accessible seating on every level with companion seats.',
+        accessible_seating:
+          'Fully step-free bowl; accessible seating on every level with companion seats.',
         services: [
           'Wheelchair escort from every drop-off point',
           'Sensory room near the 100-level with sensory bags on request',
@@ -360,6 +362,4 @@ export const VENUES = Object.freeze([
 ]);
 
 /** Fast lookup index by venue id. */
-export const VENUES_BY_ID = Object.freeze(
-  Object.fromEntries(VENUES.map((v) => [v.id, v])),
-);
+export const VENUES_BY_ID = Object.freeze(Object.fromEntries(VENUES.map((v) => [v.id, v])));

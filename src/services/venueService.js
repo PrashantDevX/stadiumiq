@@ -13,9 +13,7 @@ function mergeOperations(override = {}) {
   for (const key of Object.keys(DEFAULT_OPERATIONS)) {
     const base = DEFAULT_OPERATIONS[key];
     const patch = override[key];
-    merged[key] = Array.isArray(base)
-      ? patch ?? base
-      : { ...base, ...(patch ?? {}) };
+    merged[key] = Array.isArray(base) ? (patch ?? base) : { ...base, ...(patch ?? {}) };
   }
   return merged;
 }

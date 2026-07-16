@@ -1,0 +1,8 @@
+# Normalize all text files to LF in the repository and on checkout,
+# so the codebase is byte-identical across Windows, macOS and Linux.
+* text=auto eol=lf
+
+# Binary-safe entries (none currently shipped, kept for clarity)
+*.png binary
+*.jpg binary
+*.woff2 binary

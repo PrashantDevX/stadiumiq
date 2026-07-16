@@ -33,9 +33,7 @@ const ALL_TOOLS = [
 ];
 
 /** Registry keyed by tool name for O(1) dispatch. */
-export const TOOL_REGISTRY = Object.freeze(
-  Object.fromEntries(ALL_TOOLS.map((t) => [t.name, t])),
-);
+export const TOOL_REGISTRY = Object.freeze(Object.fromEntries(ALL_TOOLS.map((t) => [t.name, t])));
 
 /**
  * Gemini `functionDeclarations` array, filtered to the tools this role may use.
@@ -73,7 +71,11 @@ export function executeTool(name, args = {}, context = {}) {
   try {
     return tool.handler(args ?? {}, context);
   } catch (err) {
-    return { error: 'tool_failed', message: 'That request could not be completed.', detail: err.message };
+    return {
+      error: 'tool_failed',
+      message: 'That request could not be completed.',
+      detail: err.message,
+    };
   }
 }
 

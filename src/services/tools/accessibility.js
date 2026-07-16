@@ -20,7 +20,7 @@ export const getAccessibilityServices = {
   declaration: {
     name: 'get_accessibility_services',
     description:
-      'List a venue\'s accessibility services (step-free routes, wheelchair escort, sensory rooms, hearing loops, accessible seating, service-animal areas). Optionally focus on a specific need. Use for any accessibility, disability or assistance request.',
+      "List a venue's accessibility services (step-free routes, wheelchair escort, sensory rooms, hearing loops, accessible seating, service-animal areas). Optionally focus on a specific need. Use for any accessibility, disability or assistance request.",
     parametersJsonSchema: {
       type: 'object',
       properties: {
@@ -38,11 +38,15 @@ export const getAccessibilityServices = {
 
     const a11y = venue.operations.accessibility;
     const need = (args.need ?? '').toLowerCase();
-    const matcher = Object.entries(NEED_MATCHERS).find(([key]) => need.includes(key.replace('_', ' ')) || need.includes(key))?.[1];
+    const matcher = Object.entries(NEED_MATCHERS).find(
+      ([key]) => need.includes(key.replace('_', ' ')) || need.includes(key),
+    )?.[1];
 
     // Lead with services that match the stated need, keep the rest for context.
     const relevant = matcher ? a11y.services.filter((s) => matcher.test(s)) : [];
-    const services = relevant.length ? [...relevant, ...a11y.services.filter((s) => !relevant.includes(s))] : a11y.services;
+    const services = relevant.length
+      ? [...relevant, ...a11y.services.filter((s) => !relevant.includes(s))]
+      : a11y.services;
 
     return {
       venue: venue.name,
