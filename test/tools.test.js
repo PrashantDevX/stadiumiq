@@ -67,6 +67,13 @@ test('authorization: staff can report an incident and it is routed', () => {
   assert.match(r.routedTo, /Medical/);
 });
 
+test('operations brief turns incident and crowd signals into a ranked action plan', () => {
+  const r = executeTool('get_operations_brief', { minutesToKickoff: 10 }, staffCtx);
+  assert.equal(r.actionPlan.status, 'urgent');
+  assert.ok(r.actionPlan.actions.length > 0);
+  assert.match(r.recommendation, /express entry capacity/i);
+});
+
 test('find_amenities surfaces dietary options', () => {
   const r = executeTool('find_amenities', { type: 'dietary' }, fanCtx);
   assert.match(r.results[0].detail, /Halal/);

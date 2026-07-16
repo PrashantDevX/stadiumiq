@@ -8,6 +8,7 @@ import { Router } from 'express';
 import { getVenue } from '../services/venueService.js';
 import { estimateCrowd } from '../services/crowdModel.js';
 import { incidentStore } from '../services/incidentStore.js';
+import { buildOperationalPlan } from '../services/operationsPlanner.js';
 import { getMatches, TOURNAMENT } from '../data/matches.js';
 
 const router = Router();
@@ -49,23 +50,24 @@ router.get('/venues/:id/ops', (req, res) => {
       gateFlow: g.security === 'express' ? 'express' : 'standard',
     }),
   }));
+  const overall = estimateCrowd({ minutesToKickoff: safeMinutes });
+  const incidents = incidentStore.summary({ venueId: venue.id });
+  const activeIncidents = incidentStore.list({ venueId: venue.id });
 
   res.json({
     venue: { id: venue.id, name: venue.name, city: venue.city },
     minutesToKickoff: safeMinutes,
-    overall: estimateCrowd({ minutesToKickoff: safeMinutes }),
+    overall,
     gates,
-    incidents: incidentStore.summary({ venueId: venue.id }),
-    recentIncidents: incidentStore
-      .list({ venueId: venue.id })
-      .slice(0, 6)
-      .map((i) => ({
-        id: i.id,
-        type: i.type,
-        zone: i.zone,
-        severity: i.severity,
-        status: i.status,
-      })),
+    incidents,
+    actionPlan: buildOperationalPlan({ crowd: overall, incidents, activeIncidents }),
+    recentIncidents: activeIncidents.slice(0, 6).map((i) => ({
+      id: i.id,
+      type: i.type,
+      zone: i.zone,
+      severity: i.severity,
+      status: i.status,
+    })),
   });
 });
 

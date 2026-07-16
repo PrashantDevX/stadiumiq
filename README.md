@@ -68,8 +68,8 @@ StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
 | 4 | **Transportation** | Rail / shuttle / rideshare / parking comparison, arrive & depart | `plan_transport` |
 | 5 | **Sustainability** | Recycling, reusable cups, water refill, low-emission travel nudges | `get_sustainability_tips` (+ transport nudge) |
 | 6 | **Multilingual assistance** | Replies in English, Spanish, French, Portuguese, German, Arabic (RTL) | Gemini + language context |
-| 7 | **Operational intelligence** | Report incidents (routed to the right team) + live ops brief | `report_incident`, `get_operations_brief` |
-| 8 | **Real-time decision support** | Crowd- and time-aware recommendations; calm safety guidance | `get_crowd_status`, `get_safety_guidance` |
+| 7 | **Operational intelligence** | Report incidents (routed to the right team) + a shared operations picture | `report_incident`, `get_operations_brief` |
+| 8 | **Real-time decision support** | Severity- and crowd-aware ranked action plan, gate advice, and calm safety guidance | `get_operations_brief`, `get_crowd_status`, `get_safety_guidance` |
 
 **16 host venues** across the USA, Canada and Mexico are included (MetLife, SoFi, Mercedes-Benz, AT&T, NRG, Arrowhead, Gillette, Hard Rock, Lincoln Financial, Levi’s, Lumen, plus BMO Field, BC Place, Estadio Azteca, Estadio Akron and Estadio BBVA).
 
@@ -83,6 +83,19 @@ StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
 
 Authorization is enforced **server-side in the tool dispatcher** — even a prompt-injected message can’t make a Fan log incidents.
 
+### Challenge-fit evidence: a complete match-day decision loop
+
+StadiumIQ is designed around the operational moment that matters most: an
+unfamiliar fan needs help while a venue team must make a safe decision quickly.
+It closes that loop instead of only answering questions:
+
+1. **Observe:** the selected venue, minutes to kickoff, gate-flow model, accessibility need, and open on-the-ground incident reports form the current match-day context.
+2. **Decide:** deterministic rules combine crowd pressure with incident severity to rank actions (`normal`, `elevated`, `urgent`, or `critical`) and identify the responsible response team.
+3. **Assist:** Gemini selects the authorized tools and explains the grounded outcome in the user’s selected language; the offline engine exercises the same logic without a key.
+4. **Act and verify:** staff can report a medical, crowd, accessibility, security, lost-person, or facilities issue; the Ops Room immediately recalculates a ranked response plan alongside gate loads and incident status.
+
+For example, 10 minutes before kickoff, a **very high** gate load triggers express-entry and steward actions. If a volunteer then reports a **critical medical issue**, the plan escalates to incident command and places the medical response first. This is concrete, role-aware real-time decision support for stadium operations, not a generic travel chatbot.
+
 ### Not just a chatbot — a full match-day web app
 
 The GenAI assistant is one of **five views** in a framework-free single-page app:
@@ -93,7 +106,7 @@ The GenAI assistant is one of **five views** in a framework-free single-page app
 | 🧠 **AI Assistant** | The Gemini-powered chat — replies rendered as rich text via a sanitising markdown renderer |
 | 🗺️ **Stadium Map** | All 16 stadiums plotted from their real coordinates on an interactive SVG map — keyboard-accessible pins, country-coded, tap through to the guide or the assistant |
 | 🏟️ **Venue Explorer** | Per-stadium cards → gates, transit, accessibility services, sustainability, dietary options and that stadium’s fixtures |
-| 📡 **Ops Room** | Real-time decision support: per-gate load meters driven by the crowd model, a kickoff-time simulator and live incident intelligence |
+| 📡 **Ops Room** | Real-time decision support: per-gate load meters, kickoff-time simulator, incident intelligence, and a ranked action plan that recalculates after each reported issue |
 
 Plus **stadium atmosphere**: a referee whistle and crowd swell **synthesised with the Web Audio API** (zero audio files shipped) — off by default, one-tap toggle, automatically disabled for users who prefer reduced motion.
 
@@ -232,7 +245,7 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 | `POST /api/chat` | Body `{ messages: [{role, content}], context: { role, venueId, language, mobilityNeeds } }` → `{ reply, toolsUsed, mode }` |
 | `GET /api/schedule` | Tournament calendar (optionally `?venue=`) — powers Home & Venue views |
 | `GET /api/venues/:id` | Full merged venue profile + its fixtures — powers the Venue Explorer |
-| `GET /api/venues/:id/ops` | Gate-by-gate crowd loads + incident summary (`?minutesToKickoff=`) — powers the Ops Room |
+| `GET /api/venues/:id/ops` | Gate-by-gate crowd loads, incident summary, and recalculated ranked action plan (`?minutesToKickoff=`) — powers the Ops Room |
 
 ---
 

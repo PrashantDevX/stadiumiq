@@ -86,6 +86,8 @@ test('GET /api/venues/:id/ops returns gate loads and incident summary', async ()
   assert.equal(body.gates.length, 4);
   assert.ok(['high', 'very_high'].includes(body.overall.level));
   assert.ok(body.incidents);
+  assert.ok(['normal', 'elevated', 'urgent', 'critical'].includes(body.actionPlan.status));
+  assert.ok(body.actionPlan.actions.length > 0);
 });
 
 test('GET /api/venues/unknown returns 404', async () => {

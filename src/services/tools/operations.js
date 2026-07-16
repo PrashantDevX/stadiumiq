@@ -8,6 +8,7 @@
 import { getVenue } from '../venueService.js';
 import { estimateCrowd } from '../crowdModel.js';
 import { incidentStore } from '../incidentStore.js';
+import { buildOperationalPlan } from '../operationsPlanner.js';
 
 export const reportIncident = {
   name: 'report_incident',
@@ -73,22 +74,22 @@ export const getOperationsBrief = {
     const minutesToKickoff = args.minutesToKickoff ?? context.minutesToKickoff ?? 60;
     const crowd = estimateCrowd({ minutesToKickoff });
     const incidents = incidentStore.summary({ venueId: venue.id });
-    const recent = incidentStore.list({ venueId: venue.id }).slice(0, 5);
+    const activeIncidents = incidentStore.list({ venueId: venue.id });
+    const recent = activeIncidents.slice(0, 5);
+    const actionPlan = buildOperationalPlan({ crowd, incidents, activeIncidents });
 
     return {
       venue: venue.name,
       crowd: { level: crowd.level, estimatedWaitMinutes: crowd.waitMinutes, advice: crowd.advice },
       incidents,
+      actionPlan,
       recentIncidents: recent.map((i) => ({
         id: i.id,
         type: i.type,
         zone: i.zone,
         severity: i.severity,
       })),
-      recommendation:
-        crowd.level === 'very_high'
-          ? 'Open all express lanes and stage stewards at the busiest gates; hold non-urgent concourse maintenance.'
-          : 'Nominal — maintain standard staffing and monitor gate flow.',
+      recommendation: actionPlan.actions[0],
     };
   },
 };

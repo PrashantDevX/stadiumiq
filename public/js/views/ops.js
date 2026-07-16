@@ -64,6 +64,20 @@ async function refresh() {
     advice.style.fontSize = '0.87rem';
     overall.append(badge, advice);
 
+    // Decision-ready operational actions, recalculated whenever crowd timing
+    // or incident reports change.
+    const actions = card(`🎯 Action priority — ${ops.actionPlan.status}`);
+    const actionSummary = document.createElement('p');
+    actionSummary.style.fontSize = '0.87rem';
+    actionSummary.textContent = ops.actionPlan.summary;
+    const actionList = document.createElement('ol');
+    for (const item of ops.actionPlan.actions) {
+      const row = document.createElement('li');
+      row.textContent = item;
+      actionList.append(row);
+    }
+    actions.append(actionSummary, actionList);
+
     // Gate meters
     const gates = card('🚪 Gate load');
     for (const g of ops.gates) gates.append(meterRow(g));
@@ -94,7 +108,7 @@ async function refresh() {
       inc.append(empty);
     }
 
-    board.append(overall, gates, inc);
+    board.append(overall, actions, gates, inc);
   } catch (err) {
     board.textContent = err.message;
   }

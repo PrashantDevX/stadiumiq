@@ -165,7 +165,8 @@ const FORMATTERS = {
     `Ops brief — ${r.venue}:\n${bullet([
       `Crowd: ${r.crowd.level} (~${r.crowd.estimatedWaitMinutes} min). ${r.crowd.advice}`,
       `Open incidents: ${r.incidents.open} (critical ${r.incidents.bySeverity.critical}, high ${r.incidents.bySeverity.high}).`,
-      `Recommendation: ${r.recommendation}`,
+      `Priority: ${r.actionPlan.status}. ${r.actionPlan.summary}`,
+      ...r.actionPlan.actions.map((action) => `Action: ${action}`),
     ])}`,
 };
 
