@@ -58,6 +58,7 @@ function showView(name) {
 function populateSelectors(meta) {
   const role = document.getElementById('role-select');
   const venue = document.getElementById('venue-select');
+  const timing = document.getElementById('timing-select');
   const language = document.getElementById('language-select');
 
   for (const r of meta.roles) role.append(new Option(r.label, r.id));
@@ -66,6 +67,10 @@ function populateSelectors(meta) {
 
   document.getElementById('ai-mode').textContent =
     meta.aiMode === 'gemini' ? `AI: Gemini (${meta.model})` : 'AI: offline mode';
+
+  timing.addEventListener('change', () => {
+    state.minutesToKickoff = Number(timing.value);
+  });
 
   language.addEventListener('change', () => {
     const lang = meta.languages.find((l) => l.code === language.value);

@@ -47,3 +47,12 @@ test('non-English selection adds a language note in offline mode', () => {
   });
   assert.match(r.reply, /Offline mode replies in English/);
 });
+
+test('match timing changes crowd advice in the same user context', () => {
+  const r = answerOffline({
+    text: 'How busy is it?',
+    context: { role: 'fan', venueId: 'metlife', minutesToKickoff: 10 },
+  });
+  assert.match(r.reply, /very_high/i);
+  assert.match(r.reply, /21 min/i);
+});

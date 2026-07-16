@@ -3,7 +3,7 @@
  */
 import { api } from '../api.js';
 import { state } from '../state.js';
-import { renderMarkdown } from '../markdown.js';
+import { renderMarkdownNodes } from '../markdown.js';
 import { playWhistle, playCrowd } from '../sound.js';
 
 const els = {
@@ -48,6 +48,7 @@ function currentContext() {
     role: els.role.value,
     venueId: els.venue.value,
     language: els.language.value,
+    minutesToKickoff: state.minutesToKickoff,
     mobilityNeeds: els.mobility.checked,
   };
 }
@@ -66,7 +67,7 @@ function addMessage(text, who) {
 
   if (who === 'bot') {
     const body = document.createElement('div');
-    body.innerHTML = renderMarkdown(text); // safe: renderer escapes all input
+    body.append(renderMarkdownNodes(text));
     el.append(body);
   } else {
     const body = document.createElement('span');

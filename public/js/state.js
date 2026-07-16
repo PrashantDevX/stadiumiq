@@ -6,6 +6,7 @@ export const state = {
   meta: null, // /api/meta payload (venues, roles, languages, services)
   history: [], // chat history [{role, content}]
   selectedVenueId: null,
+  minutesToKickoff: 60, // selected match phase; shared with each assistant request
 };
 
 const listeners = new Map();

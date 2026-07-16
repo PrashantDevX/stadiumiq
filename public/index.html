@@ -132,6 +132,16 @@
           ><select id="venue-select" aria-label="Stadium"></select
         ></label>
         <label class="field"
+          ><span>Match phase</span
+          ><select id="timing-select" aria-label="Time relative to kickoff">
+            <option value="120">Arriving early (120 min)</option>
+            <option value="60" selected>Arriving now (60 min)</option>
+            <option value="15">Kickoff soon (15 min)</option>
+            <option value="-45">During the match</option>
+            <option value="-10">Leaving after the match</option>
+          </select></label
+        >
+        <label class="field"
           ><span>Language</span
           ><select id="language-select" aria-label="Language"></select
         ></label>

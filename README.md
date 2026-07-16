@@ -6,7 +6,7 @@
 ![Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=google&logoColor=white)
 ![Google Cloud](https://img.shields.io/badge/Cloud%20Run%20%7C%20Firestore%20%7C%20Hosting-4285F4?logo=googlecloud&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-64%20passing-brightgreen)
 ![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-brightgreen)
 ![CI](https://github.com/PrashantDevX/stadiumiq/actions/workflows/ci.yml/badge.svg)
 
@@ -18,7 +18,7 @@
 
 **Challenge 4 – Smart Stadiums & Tournament Operations.** Build a GenAI solution that improves the stadium and tournament experience across navigation, crowd management, accessibility, transportation, sustainability, multilingual assistance, operational intelligence and real-time decision support.
 
-**Primary persona (my chosen vertical): the Fan — a match-day companion.** A first-time visitor arriving at an unfamiliar stadium in one of 16 cities across three countries, possibly speaking another language, possibly with accessibility needs, needing calm, correct answers *fast*.
+**Chosen vertical: Fan match-day navigation and inclusion.** StadiumIQ is designed first for a fan arriving at an unfamiliar stadium in one of 16 cities across three countries, possibly speaking another language or needing step-free access, who needs calm, correct help *fast*. The Fan is the default role and every core journey works without a login or API key.
 
 **The insight that shapes the design:** the hardest problems for fans, volunteers, staff and organizers are the *same underlying questions* asked from different viewpoints (“where is X”, “how busy is Y”, “what should I do about Z”). So StadiumIQ uses **one GenAI brain that adapts to the user’s role** — the Fan is the flagship, and the very same engine serves volunteers, venue staff and organizers by changing its tone, priorities and, crucially, its **permissions**. That role-adaptation *is* the “logical decision making based on user context” the brief asks for, and it lets a single, clean solution cover **all eight verticals** instead of one.
 
@@ -28,7 +28,7 @@
 
 StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
 
-1. The user asks a question in natural language. The frontend sends it with **context**: role, venue, language, mobility needs.
+1. The user asks a question in natural language. The frontend sends it with **context**: role, venue, match phase, language, and mobility needs.
 2. Gemini receives a **role-specific system prompt** and a set of **function declarations** (the only tools that role is allowed to use).
 3. Gemini decides *which* tool(s) to call and with *what* arguments — e.g. `plan_route_to_seat({ section: "114", mobilityNeeds: true })`.
 4. The server executes those tools. **All real logic and data live in deterministic, unit-tested functions** — so gate numbers, transit lines and crowd advice are *computed*, never hallucinated.
@@ -55,6 +55,8 @@ StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
 <p align="center"><img src="docs/architecture.svg" alt="StadiumIQ architecture: user and web UI talk to the Express API, which runs a Gemini function-calling loop against a deterministic, role-authorized decision engine" width="760"></p>
 
 **No API key? It still works.** If `GEMINI_API_KEY` is absent (or a live call fails), StadiumIQ falls back to an **offline rule-based engine** that classifies intent and calls the *same* tools. The project is therefore always runnable and testable — Gemini upgrades the experience (free-form reasoning + full multilingual), it isn’t a hard dependency.
+
+**Why it is dynamic:** the visible **Match phase** selector changes the context for every assistant request. “Kickoff soon” produces crowd-aware gate and queue advice, while “leaving after the match” switches to egress guidance. Venue, role, language, accessibility need, current phase, and incident state are all passed through the same decision path.
 
 ---
 
@@ -189,7 +191,7 @@ stadiumiq/
 │   │   ├── firestore.js    # Zero-dependency Cloud Firestore REST client
 │   │   └── tools/          # The decision engine (9 modules + registry, 11 tools)
 │   └── utils/              # logger.js, validation.js
-├── test/                   # 55 tests: tools, crowd, validation, offline, assistant, API, markdown
+├── test/                   # 64 tests: tools, crowd, validation, offline, assistant, API, markdown
 ├── api/index.js            # Vercel serverless entry (exports the Express app)
 ├── vercel.json             # Vercel routing + security headers
 ├── docs/architecture.svg   # Architecture diagram
@@ -257,7 +259,7 @@ npm run test:coverage
 npm run lint
 npm run format:check
 ```
-55 tests, no external dependencies, and over 89% line coverage, covering:
+64 tests, no external dependencies, and over 90% line coverage, covering:
 - **Decision engine** — routing, accessibility-first logic, dietary options, transport nudges, match schedule, graceful errors.
 - **Authorization** — fans cannot call staff-only tools; staff can and incidents are routed.
 - **Crowd model** — arrival/egress curve, express-gate relief, bounds.
@@ -290,7 +292,7 @@ baseline reproducible for reviewers and contributors.
 - Strict input validation & length caps; 128 kB body limit; API rate limiting; CORS allow-list.
 - **Prompt-injection guardrails** in the system prompt; permissions fixed by the system, not the conversation.
 - Errors are logged server-side and **never leak stack traces** to clients in production.
-- Frontend renders replies with `textContent` only (no `innerHTML`) — no XSS.
+- Frontend creates reply elements and text nodes directly; model output is never inserted as raw HTML.
 - **Firestore security rules deny all direct client access**; writes go only through the trusted backend.
 - Firestore is integrated via a **zero-dependency REST client**, so cloud persistence adds no third-party code.
 - `npm audit`: **0 vulnerabilities**.

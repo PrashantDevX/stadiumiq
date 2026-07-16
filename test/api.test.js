@@ -28,6 +28,8 @@ test('GET /api/health reports ok', async () => {
   assert.equal(res.status, 200);
   const body = await res.json();
   assert.equal(body.status, 'ok');
+  assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
+  assert.match(res.headers.get('content-security-policy') ?? '', /default-src 'self'/);
 });
 
 test('GET /api/meta lists all 16 venues and the personas', async () => {
@@ -62,6 +64,21 @@ test('POST /api/chat rejects an invalid body with 400', async () => {
   assert.equal(res.status, 400);
 });
 
+test('POST /api/chat uses the selected match timing for a crowd decision', async () => {
+  const res = await fetch(`${base}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [{ role: 'user', content: 'How busy is it?' }],
+      context: { role: 'fan', venueId: 'metlife', minutesToKickoff: 10 },
+    }),
+  });
+  const body = await res.json();
+  assert.equal(res.status, 200);
+  assert.match(body.reply, /very_high/i);
+  assert.match(body.reply, /21 min/i);
+});
+
 test('GET /api/schedule returns the tournament calendar', async () => {
   const res = await fetch(`${base}/api/schedule`);
   assert.equal(res.status, 200);
@@ -93,4 +110,10 @@ test('GET /api/venues/:id/ops returns gate loads and incident summary', async ()
 test('GET /api/venues/unknown returns 404', async () => {
   const res = await fetch(`${base}/api/venues/atlantis`);
   assert.equal(res.status, 404);
+});
+
+test('GET /api/unknown receives a safe JSON 404', async () => {
+  const res = await fetch(`${base}/api/unknown`);
+  assert.equal(res.status, 404);
+  assert.deepEqual(await res.json(), { error: 'not_found', message: 'Resource not found.' });
 });

@@ -1,6 +1,32 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { renderMarkdown } from '../public/js/markdown.js';
+import { renderMarkdown, renderMarkdownNodes } from '../public/js/markdown.js';
+
+function createFakeDocument() {
+  const node = (tagName, textContent = '') => ({
+    tagName,
+    textContent,
+    children: [],
+    append(...children) {
+      this.children.push(...children);
+    },
+  });
+
+  return {
+    createDocumentFragment: () => node('#fragment'),
+    createElement: (tagName) => node(tagName.toUpperCase()),
+    createTextNode: (text) => node('#text', text),
+  };
+}
+
+function findNodes(root, tagName) {
+  const nodes = [];
+  for (const child of root.children ?? []) {
+    if (child.tagName === tagName) nodes.push(child);
+    nodes.push(...findNodes(child, tagName));
+  }
+  return nodes;
+}
 
 test('renders bold, italic and inline code', () => {
   const html = renderMarkdown('This is **bold**, *nice* and `code`.');
@@ -37,4 +63,24 @@ test('headings become h4 and blank lines split paragraphs', () => {
 test('handles empty and non-string input safely', () => {
   assert.equal(renderMarkdown(''), '');
   assert.equal(renderMarkdown(null), '');
+});
+
+test('renders safe DOM nodes without interpreting model text as HTML', () => {
+  const fragment = renderMarkdownNodes(
+    '## Title\n\n- **bold** and *calm*\n- `route`\n\n1. first\n2. second\n\n<script>alert(1)</script>',
+    createFakeDocument(),
+  );
+
+  assert.equal(fragment.children[0].tagName, 'H4');
+  assert.equal(findNodes(fragment, 'UL').length, 1);
+  assert.equal(findNodes(fragment, 'OL').length, 1);
+  assert.equal(findNodes(fragment, 'STRONG').length, 1);
+  assert.equal(findNodes(fragment, 'EM').length, 1);
+  assert.equal(findNodes(fragment, 'CODE').length, 1);
+  assert.equal(findNodes(fragment, 'SCRIPT').length, 0);
+  assert.match(findNodes(fragment, '#text').at(-1).textContent, /<script>alert\(1\)<\/script>/);
+});
+
+test('requires a document to create browser markdown nodes', () => {
+  assert.throws(() => renderMarkdownNodes('hello', null), /Document is required/);
 });
