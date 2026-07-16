@@ -52,7 +52,7 @@ export function getToolDeclarations(roleId) {
  *
  * @param {string} name
  * @param {object} args
- * @param {object} context  { role, venueId, language, minutesToKickoff, mobilityNeeds }
+ * @param {object} context  { role, venueId, language, minutesToKickoff, isEgress, mobilityNeeds }
  */
 export function executeTool(name, args = {}, context = {}) {
   const tool = TOOL_REGISTRY[name];

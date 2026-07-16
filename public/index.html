@@ -138,7 +138,7 @@
             <option value="60" selected>Arriving now (60 min)</option>
             <option value="15">Kickoff soon (15 min)</option>
             <option value="-45">During the match</option>
-            <option value="-10">Leaving after the match</option>
+            <option value="-10" data-egress="true">Leaving after the match</option>
           </select></label
         >
         <label class="field"
@@ -306,6 +306,13 @@
               aria-label="Minutes to kickoff"
             />
           </label>
+          <label class="field"
+            ><span>Flow</span
+            ><select id="ops-flow" aria-label="Crowd flow phase">
+              <option value="arrival">Arrival / in-game</option>
+              <option value="egress">Post-match egress</option>
+            </select></label
+          >
           <button type="button" id="ops-refresh" class="btn btn-primary btn-sm">Refresh</button>
         </div>
         <div id="ops-board" class="ops-board"></div>

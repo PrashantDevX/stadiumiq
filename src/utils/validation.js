@@ -76,6 +76,7 @@ export function validateChatRequest(body) {
         ctx.minutesToKickoff === undefined
           ? undefined
           : clampNumber(ctx.minutesToKickoff, LIMITS.minMinutes, LIMITS.maxMinutes, undefined),
+      isEgress: Boolean(ctx.isEgress),
       mobilityNeeds: Boolean(ctx.mobilityNeeds),
     },
   };

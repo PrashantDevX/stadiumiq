@@ -107,6 +107,16 @@ test('GET /api/venues/:id/ops returns gate loads and incident summary', async ()
   assert.ok(body.actionPlan.actions.length > 0);
 });
 
+test('GET /api/venues/:id/ops distinguishes egress from an in-progress match', async () => {
+  const during = await fetch(`${base}/api/venues/sofi/ops?minutesToKickoff=-45`);
+  const egress = await fetch(`${base}/api/venues/sofi/ops?minutesToKickoff=-45&isEgress=true`);
+  const duringBody = await during.json();
+  const egressBody = await egress.json();
+  assert.equal(duringBody.isEgress, false);
+  assert.equal(egressBody.isEgress, true);
+  assert.ok(egressBody.overall.waitMinutes > duringBody.overall.waitMinutes);
+});
+
 test('GET /api/venues/unknown returns 404', async () => {
   const res = await fetch(`${base}/api/venues/atlantis`);
   assert.equal(res.status, 404);

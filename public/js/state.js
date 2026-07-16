@@ -7,6 +7,7 @@ export const state = {
   history: [], // chat history [{role, content}]
   selectedVenueId: null,
   minutesToKickoff: 60, // selected match phase; shared with each assistant request
+  isEgress: false,
 };
 
 const listeners = new Map();

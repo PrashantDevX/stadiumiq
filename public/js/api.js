@@ -16,9 +16,9 @@ export const api = {
   schedule: (venueId) =>
     request(`/api/schedule${venueId ? `?venue=${encodeURIComponent(venueId)}` : ''}`),
   venue: (id) => request(`/api/venues/${encodeURIComponent(id)}`),
-  ops: (id, minutes) =>
+  ops: (id, minutes, isEgress = false) =>
     request(
-      `/api/venues/${encodeURIComponent(id)}/ops?minutesToKickoff=${encodeURIComponent(minutes)}`,
+      `/api/venues/${encodeURIComponent(id)}/ops?minutesToKickoff=${encodeURIComponent(minutes)}&isEgress=${isEgress}`,
     ),
   chat: (messages, context) =>
     request('/api/chat', {

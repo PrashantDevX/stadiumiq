@@ -64,6 +64,11 @@ export const getOperationsBrief = {
           type: 'number',
           description: 'Minutes until kickoff (negative if under way).',
         },
+        isEgress: {
+          type: 'boolean',
+          description:
+            'True to assess post-match exit conditions instead of in-game concourse flow.',
+        },
       },
     },
   },
@@ -72,7 +77,10 @@ export const getOperationsBrief = {
     if (!venue) return { error: 'venue_not_found', message: 'I could not find that venue.' };
 
     const minutesToKickoff = args.minutesToKickoff ?? context.minutesToKickoff ?? 60;
-    const crowd = estimateCrowd({ minutesToKickoff });
+    const crowd = estimateCrowd({
+      minutesToKickoff,
+      isEgress: args.isEgress ?? context.isEgress ?? false,
+    });
     const incidents = incidentStore.summary({ venueId: venue.id });
     const activeIncidents = incidentStore.list({ venueId: venue.id });
     const recent = activeIncidents.slice(0, 5);

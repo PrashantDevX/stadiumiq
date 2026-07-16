@@ -3,9 +3,9 @@
  *
  * Real venues would stream this from turnstile counters and CCTV analytics.
  * Here we model the well-known match-day arrival/egress curve as a pure
- * function of "minutes to kickoff" so the behaviour is explainable and unit
- * testable (no randomness, no clock dependence). Negative values mean the match
- * is under way or finished; large negatives model the post-final-whistle surge.
+ * function of match timing so the behaviour is explainable and unit testable
+ * (no randomness, no clock dependence). Negative values describe an in-progress
+ * match; `isEgress` explicitly models the distinct post-final-whistle surge.
  */
 
 /** @typedef {'low'|'moderate'|'high'|'very_high'} CrowdLevel */
@@ -22,20 +22,23 @@ const ADVICE = {
 
 /**
  * @param {object} input
- * @param {number} input.minutesToKickoff  Positive = before KO, negative = after.
+ * @param {number} input.minutesToKickoff  Positive = before KO, negative = in progress.
  * @param {'central'|'standard'|'express'} [input.gateFlow='standard']
- * @param {boolean} [input.isEgress=false]  True to model post-match exit surge.
+ * @param {boolean} [input.isEgress=false]  True to model a post-match exit surge.
  * @returns {{ level: CrowdLevel, score: number, waitMinutes: number, advice: string }}
  */
 export function estimateCrowd({ minutesToKickoff = 60, gateFlow = 'standard', isEgress = false }) {
   const t = Number(minutesToKickoff);
 
-  // Base 0..3 score along the arrival curve.
+  // Base 0..3 score along the arrival curve. An in-progress match has lighter
+  // concourse traffic than the separately signalled egress surge.
   let score;
-  if (isEgress || t <= 0) {
+  if (isEgress) {
     // Egress surge is sharpest right after the whistle, then eases.
     const sinceEnd = Math.abs(t);
     score = sinceEnd <= 20 ? 3 : sinceEnd <= 45 ? 2 : 1;
+  } else if (t <= 0) {
+    score = 0.5;
   } else if (t <= 15) score = 3;
   else if (t <= 45) score = 2.5;
   else if (t <= 90) score = 1.5;

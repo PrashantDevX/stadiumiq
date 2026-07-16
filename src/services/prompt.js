@@ -11,7 +11,7 @@ import { getVenue } from './venueService.js';
 
 /**
  * Build the system instruction string for a given request context.
- * @param {object} context { role, venueId, language, minutesToKickoff, mobilityNeeds }
+ * @param {object} context { role, venueId, language, minutesToKickoff, isEgress, mobilityNeeds }
  */
 export function buildSystemPrompt(context = {}) {
   const role = resolveRole(context.role);
@@ -23,9 +23,13 @@ export function buildSystemPrompt(context = {}) {
     : 'The user has not selected a specific venue yet — ask which host city or stadium they mean if it matters.';
 
   const timing =
-    typeof context.minutesToKickoff === 'number'
-      ? `Kickoff is in about ${context.minutesToKickoff} minutes.`
-      : '';
+    typeof context.minutesToKickoff !== 'number'
+      ? ''
+      : context.isEgress
+        ? 'The match has ended and the user is leaving during the egress period.'
+        : context.minutesToKickoff < 0
+          ? 'The match is in progress; concourses are generally lighter than at entry or egress.'
+          : `Kickoff is in about ${context.minutesToKickoff} minutes.`;
 
   const mobility = context.mobilityNeeds
     ? 'The user has indicated they need step-free / accessible routes — prioritise accessibility in every answer.'

@@ -68,9 +68,12 @@ function populateSelectors(meta) {
   document.getElementById('ai-mode').textContent =
     meta.aiMode === 'gemini' ? `AI: Gemini (${meta.model})` : 'AI: offline mode';
 
-  timing.addEventListener('change', () => {
+  const updateMatchPhase = () => {
     state.minutesToKickoff = Number(timing.value);
-  });
+    state.isEgress = timing.selectedOptions[0]?.dataset.egress === 'true';
+  };
+  updateMatchPhase();
+  timing.addEventListener('change', updateMatchPhase);
 
   language.addEventListener('change', () => {
     const lang = meta.languages.find((l) => l.code === language.value);

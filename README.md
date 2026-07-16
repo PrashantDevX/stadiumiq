@@ -6,7 +6,7 @@
 ![Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=google&logoColor=white)
 ![Google Cloud](https://img.shields.io/badge/Cloud%20Run%20%7C%20Firestore%20%7C%20Hosting-4285F4?logo=googlecloud&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Tests](https://img.shields.io/badge/tests-64%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-67%20passing-brightgreen)
 ![Vulnerabilities](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-brightgreen)
 ![CI](https://github.com/PrashantDevX/stadiumiq/actions/workflows/ci.yml/badge.svg)
 
@@ -56,7 +56,7 @@ StadiumIQ is a **tool-using AI agent**, not a chatbot that guesses.
 
 **No API key? It still works.** If `GEMINI_API_KEY` is absent (or a live call fails), StadiumIQ falls back to an **offline rule-based engine** that classifies intent and calls the *same* tools. The project is therefore always runnable and testable — Gemini upgrades the experience (free-form reasoning + full multilingual), it isn’t a hard dependency.
 
-**Why it is dynamic:** the visible **Match phase** selector changes the context for every assistant request. “Kickoff soon” produces crowd-aware gate and queue advice, while “leaving after the match” switches to egress guidance. Venue, role, language, accessibility need, current phase, and incident state are all passed through the same decision path.
+**Why it is dynamic:** the visible **Match phase** selector changes the context for every assistant request. “Kickoff soon” produces crowd-aware gate and queue advice, “during the match” reflects lighter concourse flow, and “leaving after the match” explicitly switches to egress guidance. Venue, role, language, accessibility need, current phase, and incident state are all passed through the same decision path.
 
 ---
 
@@ -118,7 +118,7 @@ Plus **stadium atmosphere**: a referee whistle and crowd swell **synthesised wit
 
 - **Runtime:** Node.js (ESM), Express 4
 - **GenAI:** Google Gemini via the official [`@google/genai`](https://www.npmjs.com/package/@google/genai) SDK, with **function calling**
-- **Cloud:** Google Cloud Run, Cloud Firestore, Firebase Hosting (see §4a)
+- **Deployment & cloud:** Vercel (live deployment), optional Cloud Firestore persistence, and an optional Cloud Run container path (see §4a)
 - **Frontend:** dependency-free vanilla HTML/CSS/JS (keeps the repo tiny and the UI fast)
 - **Security:** helmet, CORS allow-list, express-rate-limit, strict input validation
 - **Testing:** Node’s built-in `node:test` (zero test dependencies)
@@ -191,7 +191,7 @@ stadiumiq/
 │   │   ├── firestore.js    # Zero-dependency Cloud Firestore REST client
 │   │   └── tools/          # The decision engine (9 modules + registry, 11 tools)
 │   └── utils/              # logger.js, validation.js
-├── test/                   # 64 tests: tools, crowd, validation, offline, assistant, API, markdown
+├── test/                   # 67 tests: tools, crowd, validation, offline, assistant, API, markdown
 ├── api/index.js            # Vercel serverless entry (exports the Express app)
 ├── vercel.json             # Vercel routing + security headers
 ├── docs/architecture.svg   # Architecture diagram
@@ -244,10 +244,10 @@ Open **http://localhost:3000**, choose a role and venue, and start asking. With 
 |---|---|
 | `GET /api/health` | Liveness + active services (`genAI`, `persistence`) |
 | `GET /api/meta` | Venues (with coordinates), roles, languages and live service status |
-| `POST /api/chat` | Body `{ messages: [{role, content}], context: { role, venueId, language, mobilityNeeds } }` → `{ reply, toolsUsed, mode }` |
+| `POST /api/chat` | Body `{ messages: [{role, content}], context: { role, venueId, minutesToKickoff, isEgress, language, mobilityNeeds } }` → `{ reply, toolsUsed, mode }` |
 | `GET /api/schedule` | Tournament calendar (optionally `?venue=`) — powers Home & Venue views |
 | `GET /api/venues/:id` | Full merged venue profile + its fixtures — powers the Venue Explorer |
-| `GET /api/venues/:id/ops` | Gate-by-gate crowd loads, incident summary, and recalculated ranked action plan (`?minutesToKickoff=`) — powers the Ops Room |
+| `GET /api/venues/:id/ops` | Gate-by-gate crowd loads, incident summary, and recalculated ranked action plan (`?minutesToKickoff=&isEgress=`) — powers the Ops Room |
 
 ---
 
@@ -259,7 +259,7 @@ npm run test:coverage
 npm run lint
 npm run format:check
 ```
-64 tests, no external dependencies, and over 90% line coverage, covering:
+67 tests, no external dependencies, and over 90% line coverage, covering:
 - **Decision engine** — routing, accessibility-first logic, dietary options, transport nudges, match schedule, graceful errors.
 - **Authorization** — fans cannot call staff-only tools; staff can and incidents are routed.
 - **Crowd model** — arrival/egress curve, express-gate relief, bounds.

@@ -19,7 +19,7 @@ export const getCrowdStatus = {
         },
         minutesToKickoff: {
           type: 'number',
-          description: 'Minutes until kickoff (negative if the match has started or ended).',
+          description: 'Minutes until kickoff (negative if the match is in progress).',
         },
         isEgress: {
           type: 'boolean',
@@ -44,7 +44,11 @@ export const getCrowdStatus = {
         ? 'express'
         : 'standard';
 
-    const crowd = estimateCrowd({ minutesToKickoff, gateFlow, isEgress: args.isEgress ?? false });
+    const crowd = estimateCrowd({
+      minutesToKickoff,
+      gateFlow,
+      isEgress: args.isEgress ?? context.isEgress ?? false,
+    });
 
     // Suggest the quietest gate as a concrete alternative.
     const quietest =

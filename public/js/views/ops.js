@@ -45,11 +45,12 @@ function card(title) {
 async function refresh() {
   const venueId = document.getElementById('ops-venue').value;
   const minutes = Number(document.getElementById('ops-minutes').value);
+  const isEgress = document.getElementById('ops-flow').value === 'egress';
   const board = document.getElementById('ops-board');
   if (!venueId) return;
 
   try {
-    const ops = await api.ops(venueId, minutes);
+    const ops = await api.ops(venueId, minutes, isEgress);
     board.replaceChildren();
 
     // Overall status
@@ -127,6 +128,7 @@ export function initOps() {
     });
     slider.addEventListener('change', refresh);
     select.addEventListener('change', refresh);
+    document.getElementById('ops-flow').addEventListener('change', refresh);
     document.getElementById('ops-refresh').addEventListener('click', refresh);
   }
   refresh();

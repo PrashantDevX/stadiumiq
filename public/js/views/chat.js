@@ -49,6 +49,7 @@ function currentContext() {
     venueId: els.venue.value,
     language: els.language.value,
     minutesToKickoff: state.minutesToKickoff,
+    isEgress: state.isEgress,
     mobilityNeeds: els.mobility.checked,
   };
 }

@@ -39,6 +39,7 @@ router.get('/venues/:id/ops', (req, res) => {
   }
   const minutesToKickoff = Number.parseInt(String(req.query.minutesToKickoff ?? '60'), 10);
   const safeMinutes = Number.isFinite(minutesToKickoff) ? minutesToKickoff : 60;
+  const isEgress = String(req.query.isEgress ?? '').toLowerCase() === 'true';
 
   // Per-gate view drives the dashboard's gate-load meters.
   const gates = venue.operations.gates.map((g) => ({
@@ -48,15 +49,17 @@ router.get('/venues/:id/ops', (req, res) => {
     ...estimateCrowd({
       minutesToKickoff: safeMinutes,
       gateFlow: g.security === 'express' ? 'express' : 'standard',
+      isEgress,
     }),
   }));
-  const overall = estimateCrowd({ minutesToKickoff: safeMinutes });
+  const overall = estimateCrowd({ minutesToKickoff: safeMinutes, isEgress });
   const incidents = incidentStore.summary({ venueId: venue.id });
   const activeIncidents = incidentStore.list({ venueId: venue.id });
 
   res.json({
     venue: { id: venue.id, name: venue.name, city: venue.city },
     minutesToKickoff: safeMinutes,
+    isEgress,
     overall,
     gates,
     incidents,

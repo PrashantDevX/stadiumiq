@@ -26,6 +26,12 @@ test('post-match egress surge is modelled', () => {
   assert.equal(r.level, 'very_high');
 });
 
+test('an in-progress match is not mistaken for post-match egress', () => {
+  const r = estimateCrowd({ minutesToKickoff: -45, isEgress: false });
+  assert.equal(r.level, 'moderate');
+  assert.ok(r.waitMinutes < 10);
+});
+
 test('wait estimate is a non-negative integer', () => {
   const r = estimateCrowd({ minutesToKickoff: 45 });
   assert.ok(Number.isInteger(r.waitMinutes));

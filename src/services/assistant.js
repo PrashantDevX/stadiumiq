@@ -70,7 +70,7 @@ async function runWithGemini(client, { messages, context }) {
  * Main entry point.
  * @param {object} params
  * @param {Array<{role:string, content:string}>} params.messages  Full chat history.
- * @param {object} params.context  { role, venueId, language, minutesToKickoff, mobilityNeeds }
+ * @param {object} params.context  { role, venueId, language, minutesToKickoff, isEgress, mobilityNeeds }
  * @param {object} [params.client] Optional injected Gemini client (for tests).
  * @returns {Promise<{reply:string, toolsUsed:string[], mode:'gemini'|'offline'}>}
  */

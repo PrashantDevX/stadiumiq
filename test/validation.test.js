@@ -52,3 +52,12 @@ test('minutesToKickoff is clamped to a sane range', () => {
   });
   assert.equal(r.value.context.minutesToKickoff, LIMITS.maxMinutes);
 });
+
+test('preserves the explicit post-match egress context flag', () => {
+  const r = validateChatRequest({
+    messages: [{ role: 'user', content: 'How busy is it leaving?' }],
+    context: { isEgress: true },
+  });
+  assert.equal(r.ok, true);
+  assert.equal(r.value.context.isEgress, true);
+});

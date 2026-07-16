@@ -84,6 +84,10 @@ export const planRouteToSeat = {
           type: 'number',
           description: 'Minutes until kickoff (negative if the match has started).',
         },
+        isEgress: {
+          type: 'boolean',
+          description: 'True when the fan is leaving after the final whistle.',
+        },
       },
       required: ['section'],
     },
@@ -102,7 +106,11 @@ export const planRouteToSeat = {
 
     // Crowd-aware: if the nearest gate is congested, offer an express/quieter one.
     const primaryFlow = primary.security === 'express' ? 'express' : 'standard';
-    const crowd = estimateCrowd({ minutesToKickoff, gateFlow: primaryFlow });
+    const crowd = estimateCrowd({
+      minutesToKickoff,
+      gateFlow: primaryFlow,
+      isEgress: args.isEgress ?? context.isEgress ?? false,
+    });
     const expressGate = gates.find((g) => g.security === 'express' && g.id !== primary.id);
     const alternative =
       crowd.level === 'high' || crowd.level === 'very_high' ? (expressGate ?? null) : null;
